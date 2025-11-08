@@ -1,0 +1,699 @@
+from tau_bench.types import Task, Action
+
+TASKS_TEST = [
+   Task(
+      user_id="0",
+      instruction="Hello, I need to update my ensemble's details. I am Michael Hernandez from Modern Dance, with EntertainerID 1006 and MemberID 120. First, update our 'Variety' style (StyleID 23) to a strength of 5. Second, remove me (MemberID 120) from the group's member list as I am retiring.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Entertainer_Styles SET StyleStrength = 5 WHERE EntertainerID = 1006 AND StyleID = 23"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "DELETE FROM Entertainer_Members WHERE EntertainerID = 1006 AND MemberID = 120"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="1",
+      instruction="Hi, I manage the Modern Dance band with EntertainerID 1006. Please remove Michael Hernandez (MemberID: 120) from our group as he's leaving. Also, add 'Jazz' (StyleID: 15) to our performance styles with a skill level of 1.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "DELETE FROM Entertainer_Members WHERE EntertainerID = 1006 AND MemberID = 120"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "INSERT INTO Entertainer_Styles (EntertainerID, StyleID, StyleStrength) VALUES (1006, 15, 1)"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="2",
+      instruction="I am the manager for 'Country Feeling' (EntertainerID 1008). Please update the ContractPrice to 2000 for EngagementNumber 124 under EntertainerID 1008. Also, add a new musical style entry for EntertainerID 1008 with StyleID 23 (Variety) and StyleStrength 1.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Engagements SET ContractPrice = 2000 WHERE EngagementNumber = 124 AND EntertainerID = 1008;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "INSERT INTO Entertainer_Styles (EntertainerID, StyleID, StyleStrength) VALUES (1008, 23, 1);"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="5",
+      instruction="I am Katherine Ehrlich (EntertainerID 1009). Please add 'Jazz' (StyleID 12) with strength 2 to my repertoire. Also, book me for an engagement with CustomerID 202, managed by AgentID 32, on 2024-07-15 from 18:00 to 21:00 for $800. The engagement number should be system-generated.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "INSERT INTO Entertainer_Styles (EntertainerID, StyleID, StyleStrength) VALUES (1009, 12, 2);"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "INSERT INTO Engagements (EngagementNumber, StartDate, EndDate, StartTime, StopTime, ContractPrice, CustomerID, AgentID, EntertainerID) VALUES (NULL, '2024-07-15', '2024-07-15', '18:00', '21:00', 800, 202, 32, 1009);"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="1002",
+      instruction="I am the entertainer known as 'Topazz'. Please remove Michael Hernandez (MemberID: 120) from my active members, add John Green (MemberID: 125) as a new active member, and update my Motown style (StyleID: 17) strength to 4.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Entertainer_Members SET Status = 0 WHERE EntertainerID = (SELECT EntertainerID FROM Entertainers WHERE EntStageName = 'Topazz') AND MemberID = 120;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "INSERT INTO Entertainer_Members (EntertainerID, MemberID, Status) VALUES ((SELECT EntertainerID FROM Entertainers WHERE EntStageName = 'Topazz'), 125, 1);"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Entertainer_Styles SET StyleStrength = 4 WHERE EntertainerID = (SELECT EntertainerID FROM Entertainers WHERE EntStageName = 'Topazz') AND StyleID = 17;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="9",
+      instruction="Hi, I am Mariya Sergienko from the Carol Peacock Trio. Please verify my identity using our band's EntertainerID 1001 and official email carolp@cptrio.com. Once confirmed, I need two updates: set my member status (MemberID 106) to 'inactive' (Status=2) in the band, and increase our Contemporary style strength (StyleID 10) to '3' for EntertainerID 1001. Process both after authentication.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT * FROM Entertainers WHERE EntertainerID = 1001 AND EntEMailAddress = 'carolp@cptrio.com';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Entertainer_Members SET Status = 2 WHERE EntertainerID = 1001 AND MemberID = 106;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Entertainer_Styles SET StyleStrength = 3 WHERE EntertainerID = 1001 AND StyleID = 10;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="11",
+      instruction="Authenticate me as Susan McLain (EntertainerID: 1012, email: susan@gs.com). Then, increase my 'Classical' style strength from 2 to 3 (StyleID: 7) in my entertainer profile. Also, for engagement #116, switch the agent from John Kennedy (AgentID: 6) to William Thompson (AgentID: 1).",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT EntertainerID FROM Entertainers WHERE EntertainerID = 1012 AND EntEmailAddress = 'susan@gs.com';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Entertainer_Styles SET StyleStrength = 3 WHERE EntertainerID = 1012 AND StyleID = 7 AND StyleStrength = 2;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Engagements SET AgentID = 1 WHERE EngagementNumber = 116 AND EntertainerID = 1012 AND AgentID = 6;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="12",
+      instruction="Authenticate me as Jim Glynn with EntertainerID 1004. Then, update engagement number 19 for CustomerID 10009 by changing the EndDate to '2017-10-08' and ContractPrice to 500.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT * FROM Entertainers WHERE EntertainerID = 1004 AND EntStageName = 'Jim Glynn'"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Engagements SET EndDate = '2017-10-08', ContractPrice = 500 WHERE EngagementNumber = 19 AND EntertainerID = 1004 AND CustomerID = 10009"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="14",
+      instruction="As the manager for JV & the Deep Six (EntertainerID 1003, email: jv@myspring.com), I require these updates: (1) Remove Luke Patterson (MemberID 117) from our group roster. (2) Add the musical style 'Rhythm and Blues' (StyleID 19) with strength 2 to our group's styles. (3) Update engagement #104 by changing the agent from AgentID 6 to AgentID 5. Execute all changes immediately.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "DELETE FROM Entertainer_Members WHERE EntertainerID = 1003 AND MemberID = 117;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "INSERT INTO Entertainer_Styles (EntertainerID, StyleID, StyleStrength) VALUES (1003, 19, 2);"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Engagements SET AgentID = 5 WHERE EngagementNumber = 104 AND AgentID = 6;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="16",
+      instruction="Hello, I'm Susan McLain (EntertainerID 1012). Could you please add the Jazz style (StyleID 15) with a strength level of 1 to my profile? I need to keep my existing styles unchanged - Classical (StyleID 7, strength 2) and Folk (StyleID 13, strength 1). Additionally, I'd like to create a new engagement for customer Dean McCrae (CustomerID 10004) managed by agent John Kennedy (AgentID 6), with me as the performer (EntertainerID 1012). The engagement should run from April 2nd, 2018 to April 4th, 2018, daily from 5PM (17:00:00) to 9PM (21:00:00), with a contract price of $450.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "INSERT INTO Entertainer_Styles (EntertainerID, StyleID, StyleStrength) VALUES (1012, 15, 1);"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "INSERT INTO Engagements (EngagementNumber, StartDate, EndDate, StartTime, StopTime, ContractPrice, CustomerID, AgentID, EntertainerID) VALUES (NULL, '2018-04-02', '2018-04-04', '17:00:00', '21:00:00', 450, 10004, 6, 1012);"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="17",
+      instruction="Hi, I’m Jazz Persuasion (EntertainerID 1005). I’d like to update Angel Kennedy (MemberID 116) to inactive status (Status 0) in my group. Also, add the Motown style (StyleID 17) with a StyleStrength of 2 to our group’s musical styles.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Entertainer_Members SET Status = 0 WHERE EntertainerID = 1005 AND MemberID = 116;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "INSERT INTO Entertainer_Styles (EntertainerID, StyleID, StyleStrength) VALUES (1005, 17, 2);"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="18",
+      instruction="Hello, I'm the manager for 'Saturday Revue'. My email is edz@coolness.com, and our EntertainerID is 1010. I need to update two records: First, set Susan McLain (MemberID 123) to inactive status (Status = 2) in the Entertainer_Members table. Second, add 'Jazz' (StyleID 15) with StyleStrength 1 to our styles in the Entertainer_Styles table.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT 1 FROM Entertainers WHERE EntertainerID = 1010 AND EntEmailAddress = 'edz@coolness.com';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Entertainer_Members SET Status = 2 WHERE EntertainerID = 1010 AND MemberID = 123;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "INSERT INTO Entertainer_Styles (EntertainerID, StyleID, StyleStrength) VALUES (1010, 15, 1);"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="7",
+      instruction="Hello, this is Caleb Viescas, AgentID 7. I need to update my agent profile with my new phone number 555-3141 and a revised commission rate of 4.5%.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT * FROM Agents WHERE AgentID = 7 AND AgtFirstName = 'Caleb' AND AgtLastName = 'Viescas'"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Agents SET AgtPhoneNumber = '555-3141', CommissionRate = 0.045 WHERE AgentID = 7"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="21",
+      instruction="I am Katherine Ehrlich, and my entertainer profile uses the email ke@mzo.com. To authenticate, please verify my EntertainerID is 1009. Once confirmed, update the status of my member with MemberID 121 to active (status 1) and increase the style strength for StyleID 14 (Chamber Music) from 1 to 3.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT EntertainerID FROM Entertainers WHERE EntEMailAddress = 'ke@mzo.com' AND EntertainerID = 1009;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Entertainer_Members SET Status = 1 WHERE EntertainerID = 1009 AND MemberID = 121;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Entertainer_Styles SET StyleStrength = 3 WHERE EntertainerID = 1009 AND StyleID = 14;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="22",
+      instruction="I am Topazz (EntertainerID 1002). For my engagement numbered 58, which involves CustomerID 10001 and is currently handled by Scott Bishop (AgentID 2), I need to switch the agent assignment to William Thompson (AgentID 1) immediately due to a contractual adjustment.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Engagements SET AgentID = 1 WHERE EngagementNumber = 58 AND EntertainerID = 1002 AND CustomerID = 10001 AND AgentID = 2;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="23",
+      instruction="Hello, I'm Katherine Ehrlich (EntertainerID 1009). Could you please update my entertainer profile? Set my website URL to 'www.katherineehrlichmusic.com' and email address to 'k.ehrlich.new@musicpro.com'. Also, add a new style entry for me: StyleID 30 with a strength level of 2.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Entertainers SET EntWebPage = 'www.katherineehrlichmusic.com', EntEMailAddress = 'k.ehrlich.new@musicpro.com' WHERE EntertainerID = 1009;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "INSERT INTO Entertainer_Styles (EntertainerID, StyleID, StyleStrength) VALUES (1009, 30, 2);"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="24",
+      instruction="I am Katherine Ehrlich with EntertainerID 1009. Authenticate me first. Then schedule a new engagement starting on 2024-09-10 at 18:00 and ending on 2024-09-10 at 20:00 with a contract price of $1200.00. Assign CustomerID 205 and AgentID 311 to this engagement. Also, update the strength for my 'Classical' style (StyleID 7) to 3. Execute these changes immediately.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT EntertainerID FROM Entertainers WHERE EntertainerID = 1009;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "INSERT INTO Engagements (StartDate, EndDate, StartTime, StopTime, ContractPrice, CustomerID, AgentID, EntertainerID) VALUES ('2024-09-10', '2024-09-10', '18:00', '20:00', 1200.00, 205, 311, 1009);"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Entertainer_Styles SET StyleStrength = 3 WHERE EntertainerID = 1009 AND StyleID = 7;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="27",
+      instruction="As the manager for Coldwater Cattle Company (EntertainerID 1007), update our musical style offerings by: (1) removing StyleID 6 (Country), (2) changing StyleID 11 (Country Rock) to StyleStrength 2, and (3) adding a new StyleID 10 (Contemporary) with StyleStrength 1.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "DELETE FROM Entertainer_Styles WHERE EntertainerID = 1007 AND StyleID = 6;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Entertainer_Styles SET StyleStrength = 2 WHERE EntertainerID = 1007 AND StyleID = 11;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "INSERT INTO Entertainer_Styles (EntertainerID, StyleID, StyleStrength) VALUES (1007, 10, 1);"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="28",
+      instruction="Hello, this is a representative of Coldwater Cattle Company (EntertainerID 1007, EntStageName 'Coldwater Cattle Company'). We need to update the phone number for Robert Brown, who is a member of our group (MemberID 105), to '555-3333'. Also, add the musical style StyleID 15 to our entertainer profile with a strength of 1.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT * FROM Entertainers WHERE EntertainerID = 1007 AND EntStageName = 'Coldwater Cattle Company';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT * FROM Entertainer_Members WHERE EntertainerID = 1007 AND MemberID = 105;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Members SET MbrPhoneNumber = '555-3333' WHERE MemberID = 105;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "INSERT INTO Entertainer_Styles (EntertainerID, StyleID, StyleStrength) VALUES (1007, 15, 1);"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="29",
+      instruction="Hi, I'm Julia Schnebly, Entertainer ID 1011. Please update my email to julia.schnebly.music@example.com. Also, add a Jazz specialization with Style ID 15 and strength level 4. Additionally, change the start time of my engagement number 128 to 20:00:00.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Entertainers SET EntEMailAddress = 'julia.schnebly.music@example.com' WHERE EntertainerID = 1011;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "INSERT INTO Entertainer_Styles (EntertainerID, StyleID, StyleStrength) VALUES (1011, 15, 4);"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Engagements SET StartTime = '20:00:00' WHERE EngagementNumber = 128 AND EntertainerID = 1011;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="30",
+      instruction="I am Jim Glynn (EntertainerID 1004). Please add Jazz (StyleID=15) with a style strength of 2 to my repertoire and update my engagement #119 to use agent Maria Patterson (AgentID=8).",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "INSERT INTO Entertainer_Styles (EntertainerID, StyleID, StyleStrength) VALUES (1004, 15, 2);"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Engagements SET AgentID = 8 WHERE EngagementNumber = 119 AND EntertainerID = 1004;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="1013",
+      instruction="I am Caroline Coie Quartet (EntertainerID: 1013) from Auburn, WA. Please help me with three updates: (1) Change my member Kendra Bonnicksen (MemberID: 112) to inactive status (status=2), (2) Add 'Rhythm and Blues' (StyleID: 19) as a new style for my group with strength level 2, and (3) Adjust the EndDate of my upcoming engagement #129 with Dean McCrae (CustomerID: 10004) to '2018-03-08'.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT EntertainerID FROM Entertainers WHERE EntertainerID = 1013 AND EntCity = 'Auburn' AND EntState = 'WA';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Entertainer_Members SET Status = 2 WHERE EntertainerID = 1013 AND MemberID = 112;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "INSERT INTO Entertainer_Styles (EntertainerID, StyleID, StyleStrength) VALUES (1013, 19, 2);"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Engagements SET EndDate = '2018-03-08' WHERE EngagementNumber = 129 AND EntertainerID = 1013 AND CustomerID = 10004;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="32",
+      instruction="I am the manager for Saturday Revue with email edz@coolness.com and EntertainerID 1010. I need to change the StyleStrength of 'Standards' (StyleID 21) to 5 for our entertainer, and update Engagement 109 to use AgentID 2 instead of the current agent. Proceed with these updates.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT EntertainerID FROM Entertainers WHERE EntEMailAddress = 'edz@coolness.com' AND EntertainerID = 1010;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Entertainer_Styles SET StyleStrength = 5 WHERE EntertainerID = 1010 AND StyleID = 21;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Engagements SET AgentID = 2 WHERE EngagementNumber = 109 AND EntertainerID = 1010;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="33",
+      instruction="I am Kathryn Patterson (MemberID 111), a current member of 'Country Feeling' (EntertainerID 1008). Please update the contract price for our engagement (EngagementNumber 124) from $1850 to $2000, and change the assigned agent from William Thompson (AgentID 1) to Caleb Viescas (AgentID 7).",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT M.MemberID, M.MbrFirstName, M.MbrLastName, EM.Status FROM Members M INNER JOIN Entertainer_Members EM ON M.MemberID = EM.MemberID WHERE M.MemberID = 111 AND M.MbrFirstName = 'Kathryn' AND M.MbrLastName = 'Patterson' AND EM.EntertainerID = 1008 AND EM.Status = 1;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Engagements SET ContractPrice = 2000, AgentID = 7 WHERE EngagementNumber = 124 AND EntertainerID = 1008 AND ContractPrice = 1850 AND AgentID = 1;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="35",
+      instruction="Authenticate by locating your entertainer record with EntertainerID=1001. Then, update the member status for Janice Galvin (MemberID=118) to active (Status=1), remove the style 'Contemporary' (StyleID=10) from your performed styles, and change the contract price to 950 for engagement number 123.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT * FROM Entertainers WHERE EntertainerID=1001;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Entertainer_Members SET Status=1 WHERE EntertainerID=1001 AND MemberID=118;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "DELETE FROM Entertainer_Styles WHERE EntertainerID=1001 AND StyleID=10;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Engagements SET ContractPrice=950 WHERE EngagementNumber=123 AND EntertainerID=1001;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="1005",
+      instruction="I am the leader of Jazz Persuasion with EntertainerID 1005 and EntSSN 888-30-1031. Remove Michael Hernandez (MemberID: 120) from our entertainer group and add Olivia Davis (MemberID: 122) as a current member with Status 1.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT * FROM Entertainers WHERE EntertainerID = 1005 AND EntSSN = '888-30-1031';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "DELETE FROM Entertainer_Members WHERE EntertainerID = 1005 AND MemberID = 120;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "INSERT INTO Entertainer_Members (EntertainerID, MemberID, Status) VALUES (1005, 122, 1);"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="38",
+      instruction="Hello, this is the manager for entertainer Katherine Ehrlich. To authenticate, please verify that EntertainerID 1009 has EntStageName 'Katherine Ehrlich' and EntEMailAddress 'ke@mzo.com'. Once confirmed, I need to do three things: 1) Add a new member to her group with MemberID 208, first name Helen, last name Marston, phone '555-6677', gender 'F', and status 1. 2) Add a new musical style for her: StyleID 32 and style strength 2. 3) Schedule a new engagement with CustomerID 17, AgentID 3, on 2024-07-15, start time 18:00, stop time 22:00, and contract price $2000.00.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT EntStageName, EntEMailAddress FROM Entertainers WHERE EntertainerID = 1009;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "INSERT INTO Members (MemberID, MbrFirstName, MbrLastName, MbrPhoneNumber, Gender) VALUES (208, 'Helen', 'Marston', '555-6677', 'F');"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "INSERT INTO Entertainer_Members (EntertainerID, MemberID, Status) VALUES (1009, 208, 1);"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "INSERT INTO Entertainer_Styles (EntertainerID, StyleID, StyleStrength) VALUES (1009, 32, 2);"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "INSERT INTO Engagements (StartDate, EndDate, StartTime, StopTime, ContractPrice, CustomerID, AgentID, EntertainerID) VALUES ('2024-07-15', '2024-07-15', '18:00', '22:00', 2000.00, 17, 3, 1009);"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="39",
+      instruction="I am the group leader of 'Country Feeling' (EntertainerID 1008). Update our official phone number to '555-8000'. For our 'Country' style (StyleID 6), set the style strength to 3. Deactivate Robert Brown (MemberID 105) from the band. Then add new active member Samantha Stone with MemberID 120, First Name 'Samantha', Last Name 'Stone', Phone '555-3120', Gender 'F'.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Entertainers SET EntPhoneNumber = '555-8000' WHERE EntertainerID = 1008;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Entertainer_Styles SET StyleStrength = 3 WHERE EntertainerID = 1008 AND StyleID = 6;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "INSERT INTO Members (MemberID, MbrFirstName, MbrLastName, MbrPhoneNumber, Gender) VALUES (120, 'Samantha', 'Stone', '555-3120', 'F');"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "INSERT INTO Entertainer_Members (EntertainerID, MemberID, Status) VALUES (1008, 120, 1);"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Entertainer_Members SET Status = 0 WHERE EntertainerID = 1008 AND MemberID = 105;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="42",
+      instruction="I am Jim Glynn, stage name 'Jim Glynn', residing at 13920 S.E. 40th Street, Bellevue, WA 98009, with phone number 555-2531. I want to update my musical style profile by increasing the strength of my existing 'Folk' style from 1 to 2 and add a new 'Jazz' style with strength 1. Also, update my contact email to jimglynnmusic@gmail.com.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT * FROM Entertainers WHERE EntStageName = 'Jim Glynn' AND EntStreetAddress = '13920 S.E. 40th Street' AND EntCity = 'Bellevue' AND EntState = 'WA' AND EntZipCode = '98009' AND EntPhoneNumber = '555-2531';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE es SET StyleStrength = 2 FROM Entertainer_Styles es JOIN Musical_Styles ms ON es.StyleID = ms.StyleID WHERE es.EntertainerID IN (SELECT EntertainerID FROM Entertainers WHERE EntStageName = 'Jim Glynn' AND EntStreetAddress = '13920 S.E. 40th Street' AND EntCity = 'Bellevue' AND EntState = 'WA' AND EntZipCode = '98009' AND EntPhoneNumber = '555-2531') AND ms.StyleName = 'Folk';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "INSERT INTO Entertainer_Styles (EntertainerID, StyleID, StyleStrength) SELECT (SELECT EntertainerID FROM Entertainers WHERE EntStageName = 'Jim Glynn' AND EntStreetAddress = '13920 S.E. 40th Street' AND EntCity = 'Bellevue' AND EntState = 'WA' AND EntZipCode = '98009' AND EntPhoneNumber = '555-2531'), (SELECT StyleID FROM Musical_Styles WHERE StyleName = 'Jazz'), 1;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Entertainers SET EntEMailAddress = 'jimglynnmusic@gmail.com' WHERE EntStageName = 'Jim Glynn' AND EntStreetAddress = '13920 S.E. 40th Street' AND EntCity = 'Bellevue' AND EntState = 'WA' AND EntZipCode = '98009' AND EntPhoneNumber = '555-2531';"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+]
