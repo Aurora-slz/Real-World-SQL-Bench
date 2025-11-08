@@ -52,7 +52,7 @@ class LLMUserSimulationEnv(BaseUserSimulationEnv):
     def __init__(self, model: str, api: str) -> None:
         super().__init__()
         self.messages: List[Dict[str, Any]] = []
-        self.model = model                          # 模型路径
+        self.model = model
         self.api = api
         self.reset()
 
