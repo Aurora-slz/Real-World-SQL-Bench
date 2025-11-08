@@ -16,7 +16,6 @@ class Task(BaseModel):
     user_id: str
     actions: List[Action]
     instruction: str
-    outputs: List[str]
 
 
 class RewardOutputInfo(BaseModel):
@@ -76,8 +75,8 @@ class RunConfig(BaseModel):
     user_model: str = "gpt-4o"
     num_trials: int = 1
     env: str = "retail"
-    agent_strategy: str = "tool-calling"
-    temperature: float = 0.0
+    agent_strategy: str = "sql"
+    temperature: float = 0.6
     task_split: str = "test"
     start_index: int = 0
     end_index: int = -1

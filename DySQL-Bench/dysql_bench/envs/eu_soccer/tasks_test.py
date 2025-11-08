@@ -1,0 +1,6381 @@
+from dysql_bench.types import Task, Action
+
+TASKS_TEST = [
+   Task(
+      user_id="analyst_official_001",
+      instruction="I am an authorized team analyst. Please update the player Jakub Wojcicki’s height to 192 and weight to 179 in the Player table. The player’s identifiers are player_api_id=275771 and player_fifa_api_id=215584. Only modify these two fields—no other changes needed.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height=192, weight=179 WHERE player_api_id=275771 AND player_fifa_api_id=215584;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="jan_van_dijk",
+      instruction="My name is Jan van Dijk. Please update the player attributes for Erwin Mulder (player_api_id = 112107) dated '2015-06-01'. Set his overall_rating to 75 and potential to 78. After the update, confirm the current overall_rating and potential for this player for the same date.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player_Attributes SET overall_rating = 75, potential = 78 WHERE player_api_id = 112107 AND date = '2015-06-01';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT overall_rating, potential FROM Player_Attributes WHERE player_api_id = 112107 AND date = '2015-06-01';"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="manager_2024",
+      instruction="I am the match record manager. For match_api_id 1750708 (played on 2015-03-21), player Aldair (player_api_id 281864, player_fifa_api_id 223965) should have been listed as the home goalkeeper, not as the away team's center forward. Please update this match: set home_player_1 to 281864 and set away_player_9 to NULL.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_1 = 281864, away_player_9 = NULL WHERE match_api_id = 1750708;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="isabelle.laurent@footballstats.com",
+      instruction="As Isabelle Laurent, I am reviewing Samuel Bouhours's recent stats. Please update his Player_Attributes for player_api_id 94013, date '2013-03-15 00:00:00', setting overall_rating to 70. Additionally, for Match with match_api_id 1217094, update away_team_goal to 1. Ensure these updates are carried out with all specified parameters.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player_Attributes SET overall_rating = 70 WHERE player_api_id = 94013 AND date = '2013-03-15 00:00:00';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_team_goal = 1 WHERE match_api_id = 1217094;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="update-request-92",
+      instruction="Hello, I am a stats researcher. After discovering that Steven Davis (player_api_id=23792) reached his 400th appearance on the 2010-02-14 match (match_api_id=659007), I’d like to update his profile to reflect new official physical measurements: his height should be 174 (from 172.72) and weight 162 (from 159). Please update the 'Player' table to set height=174 and weight=162 for player_api_id=23792. Confirm when done.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height=174, weight=162 WHERE player_api_id=23792;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="manager_001",
+      instruction="I am the manager, and I need to update player Yassine Jebbour's official profile in the database. His correct player_api_id is 179517 and player_fifa_api_id is 193448. Update his height to 183 and his weight to 160, as the current height and weight in the record (180.34, 154) are outdated.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height=183, weight=160 WHERE player_api_id=179517 AND player_fifa_api_id=193448;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="analyst1",
+      instruction="I am an analyst and I have identified that player Michael Nelson had an incorrect overall rating entry. On the match played on 2013-09-21 (match_api_id 1474203), please update all Player_Attributes rows where player_api_id = 23507 and date = '2013-09-21 00:00:00' to set overall_rating = 78.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player_Attributes SET overall_rating = 78 WHERE player_api_id = 23507 AND date = '2013-09-21 00:00:00';"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="club-data-analyst-8391",
+      instruction="I am the club data analyst. For player Zlatko Junuzovic (player_api_id=42860), after reviewing his performance in the match with match_api_id=1732776, I want to update his defensive_work_rate to 'High' for the attributes record corresponding to that match's date (date='2014-10-04 00:00:00'). First, show me his current defensive_work_rate for that date before updating, then perform the update.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT defensive_work_rate FROM Player_Attributes WHERE player_api_id=42860 AND date='2014-10-04 00:00:00';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player_Attributes SET defensive_work_rate='High' WHERE player_api_id=42860 AND date='2014-10-04 00:00:00';"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="request_player_574845",
+      instruction="You are detail-oriented and verifying player data for research. For player 'Cristian Manea' (player_api_id 574845), fetch all matches in the 2015/2016 season where he participated, listing match_api_id, home_team_goal, away_team_goal, and date. After that, update his height in the Player table from 182.88 to 185.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT match_api_id, home_team_goal, away_team_goal, date FROM Match WHERE season = '2015/2016' AND (home_player_1 = 574845 OR home_player_2 = 574845 OR home_player_3 = 574845 OR home_player_4 = 574845 OR home_player_5 = 574845 OR home_player_6 = 574845 OR home_player_7 = 574845 OR home_player_8 = 574845 OR home_player_9 = 574845 OR home_player_10 = 574845 OR home_player_11 = 574845 OR away_player_1 = 574845 OR away_player_2 = 574845 OR away_player_3 = 574845 OR away_player_4 = 574845 OR away_player_5 = 574845 OR away_player_6 = 574845 OR away_player_7 = 574845 OR away_player_8 = 574845 OR away_player_9 = 574845 OR away_player_10 = 574845 OR away_player_11 = 574845)"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height = 185 WHERE player_api_id = 574845 AND height = 182.88"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="41688",
+      instruction="You are Mirko Valdifiori (player_api_id=41688, birthday='1986-04-21 00:00:00'). You want to update your player attributes for the entry on date '2015-11-29 00:00:00' as follows: set overall_rating=80, potential=82, preferred_foot='Right', and defensive_work_rate='High'. After this, retrieve all matches from the 2015/2016 season where you appeared as home_center_back_2 in the match_view (provide match_api_id, home_team, away_team, season, home_team_goal, away_team_goal) so you can review your match involvement with the new profile.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player_Attributes SET overall_rating=80, potential=82, preferred_foot='Right', defensive_work_rate='High' WHERE player_api_id=41688 AND date='2015-11-29 00:00:00';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT match_api_id, home_team, away_team, season, home_team_goal, away_team_goal FROM match_view WHERE season='2015/2016' AND home_center_back_2='Mirko Valdifiori';"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="coach001",
+      instruction="For the match with match_api_id 1032782, substitute home team's starting goalkeeper from 'Davino Verhulst' (player_api_id 37937) to 'Yves De Winter' (player_api_id 38341), by updating the 'home_player_1' field in the Match table.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_1 = 38341 WHERE match_api_id = 1032782 AND home_player_1 = 37937;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="166595",
+      instruction="You are a sports data analyst. For accurate historical records, you want to update the Match record for match_api_id 1536841 so that Simone Zaza (player_api_id 166595) is set as the home_player_10. After updating, retrieve a list of all matches in the 2013/2014 Italy Serie A season where Simone Zaza (player_api_id 166595) participated, showing the match_api_id, home_team_api_id, away_team_api_id, date, home_team_goal, and away_team_goal for each.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_10 = 166595 WHERE match_api_id = 1536841;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT match_api_id, home_team_api_id, away_team_api_id, date, home_team_goal, away_team_goal FROM Match WHERE season = '2013/2014' AND league_id = 10257 AND (home_player_1 = 166595 OR home_player_2 = 166595 OR home_player_3 = 166595 OR home_player_4 = 166595 OR home_player_5 = 166595 OR home_player_6 = 166595 OR home_player_7 = 166595 OR home_player_8 = 166595 OR home_player_9 = 166595 OR home_player_10 = 166595 OR home_player_11 = 166595 OR away_player_1 = 166595 OR away_player_2 = 166595 OR away_player_3 = 166595 OR away_player_4 = 166595 OR away_player_5 = 166595 OR away_player_6 = 166595 OR away_player_7 = 166595 OR away_player_8 = 166595 OR away_player_9 = 166595 OR away_player_10 = 166595 OR away_player_11 = 166595);"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="medical_update_clerk_2024",
+      instruction="I am Sofia Evans, the club's medical update clerk. After the latest medical examination, I've found new physical data for two players. Please update the Player table: for player_api_id 33683 (Evander Sno), change the height to 189 and the weight to 198. For player_api_id 101042 (Aaron Meijers), set the height to 176 and weight to 169. Both must be updated accordingly, as these are the results from our official medical team.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height=189, weight=198 WHERE player_api_id=33683;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height=176, weight=169 WHERE player_api_id=101042;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="admin_001",
+      instruction="I am an administrator. Please completely remove player 'Maurizio Domizzi' (player_api_id: 41318, player_fifa_api_id: 51101) from the database, including all their attribute history. Ensure you delete both from Player_Attributes and the Player table, using both player_api_id and player_fifa_api_id as criteria.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "DELETE FROM Player_Attributes WHERE player_api_id = 41318 AND player_fifa_api_id = 51101;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "DELETE FROM Player WHERE player_api_id = 41318 AND player_fifa_api_id = 51101;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="club_official_antonio_reguero_354519",
+      instruction="I am a club official for Antonio Reguero Chapinal and want to update his birthday. His player_api_id is 354519. Please update his birthday to '1982-08-04 00:00:00'. Then show me all matches where player_api_id 354519 appeared (either as home or away player in any slot), including match_api_id, season, date, home_team_api_id, away_team_api_id, home_team_goal, and away_team_goal.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT * FROM Player WHERE player_api_id=354519 AND player_name='Antonio Reguero Chapinal';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET birthday='1982-08-04 00:00:00' WHERE player_api_id=354519;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT match_api_id, season, date, home_team_api_id, away_team_api_id, home_team_goal, away_team_goal FROM Match WHERE 354519 IN (home_player_1, home_player_2, home_player_3, home_player_4, home_player_5, home_player_6, home_player_7, home_player_8, home_player_9, home_player_10, home_player_11, away_player_1, away_player_2, away_player_3, away_player_4, away_player_5, away_player_6, away_player_7, away_player_8, away_player_9, away_player_10, away_player_11);"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="football_data_analyst",
+      instruction="You are a data analyst. After reviewing match #1724115 from the 2014/2015 season, you want to update Juan Mata's (player_api_id=41468, player_fifa_api_id=178088) Player_Attributes. Set his overall_rating to 85 and potential to 87, for the date '2014-12-03'. Also, you want to insert a new Team_Attributes record for Manchester United (team_api_id=10260, team_fifa_api_id=9843) on '2014-12-03' with buildUpPlaySpeed=60, buildUpPlaySpeedClass='Balanced', buildUpPlayDribbling=70, buildUpPlayDribblingClass='Good', buildUpPlayPassing=65, buildUpPlayPassingClass='Mixed', buildUpPlayPositioningClass='Free Form', chanceCreationPassing=63, chanceCreationPassingClass='Mixed', chanceCreationCrossing=75, chanceCreationCrossingClass='Good', chanceCreationShooting=66, chanceCreationShootingClass='Normal', chanceCreationPositioningClass='Flexible', defencePressure=70, defencePressureClass='Medium', defenceAggression=72, defenceAggressionClass='Medium', defenceTeamWidth=67, defenceTeamWidthClass='Normal', defenceDefenderLineClass='Cover'.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player_Attributes SET overall_rating=85, potential=87 WHERE player_api_id=41468 AND date='2014-12-03';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "INSERT INTO Team_Attributes (team_fifa_api_id, team_api_id, date, buildUpPlaySpeed, buildUpPlaySpeedClass, buildUpPlayDribbling, buildUpPlayDribblingClass, buildUpPlayPassing, buildUpPlayPassingClass, buildUpPlayPositioningClass, chanceCreationPassing, chanceCreationPassingClass, chanceCreationCrossing, chanceCreationCrossingClass, chanceCreationShooting, chanceCreationShootingClass, chanceCreationPositioningClass, defencePressure, defencePressureClass, defenceAggression, defenceAggressionClass, defenceTeamWidth, defenceTeamWidthClass, defenceDefenderLineClass) VALUES (9843, 10260, '2014-12-03', 60, 'Balanced', 70, 'Good', 65, 'Mixed', 'Free Form', 63, 'Mixed', 75, 'Good', 66, 'Normal', 'Flexible', 70, 'Medium', 72, 'Medium', 67, 'Normal', 'Cover');"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="manager_request_001",
+      instruction="You are Diego Ramirez, manager of the home team for the match on 2010-04-19. For the match with match_api_id 685145, you want to swap the players assigned to home_player_3 (currently player_api_id=33849) and home_player_4 (currently player_api_id=33607). Update the record so home_player_3 is now 33607 and home_player_4 is now 33849.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_3=33607, home_player_4=33849 WHERE match_api_id=685145;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="543298",
+      instruction="My name is Krzystof Piatek and my player_api_id is 543298. My player_fifa_api_id is 223113. I noticed the height value in my record is wrong—it should be 185.50, not 182.88. Please update my height to 185.50 in the Player table. Once updated, list all Match records in which I participated (i.e. where 543298 appears in any home_player_X or away_player_X field), with match_api_id and date, sorted by date descending, so I can check the update.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height = 185.50 WHERE player_api_id = 543298;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT match_api_id, date FROM Match WHERE home_player_1 = 543298 OR home_player_2 = 543298 OR home_player_3 = 543298 OR home_player_4 = 543298 OR home_player_5 = 543298 OR home_player_6 = 543298 OR home_player_7 = 543298 OR home_player_8 = 543298 OR home_player_9 = 543298 OR home_player_10 = 543298 OR home_player_11 = 543298 OR away_player_1 = 543298 OR away_player_2 = 543298 OR away_player_3 = 543298 OR away_player_4 = 543298 OR away_player_5 = 543298 OR away_player_6 = 543298 OR away_player_7 = 543298 OR away_player_8 = 543298 OR away_player_9 = 543298 OR away_player_10 = 543298 OR away_player_11 = 543298 ORDER BY date DESC;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="admin007",
+      instruction="I am the team data admin. For player 'Wojciech Kaczmarek' (player_api_id 93450), please update his height to 202 (cm) and weight to 220 (lbs). Starting from the 2014/2015 season onward, remove him from all match lineups by setting his entry to NULL in any 'home_player_#' or 'away_player_#' fields in matches of those seasons.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height=202, weight=220 WHERE player_api_id=93450"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_1=NULL WHERE home_player_1=93450 AND season>='2014/2015'"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_2=NULL WHERE home_player_2=93450 AND season>='2014/2015'"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_3=NULL WHERE home_player_3=93450 AND season>='2014/2015'"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_4=NULL WHERE home_player_4=93450 AND season>='2014/2015'"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_5=NULL WHERE home_player_5=93450 AND season>='2014/2015'"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_6=NULL WHERE home_player_6=93450 AND season>='2014/2015'"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_7=NULL WHERE home_player_7=93450 AND season>='2014/2015'"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_8=NULL WHERE home_player_8=93450 AND season>='2014/2015'"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_9=NULL WHERE home_player_9=93450 AND season>='2014/2015'"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_10=NULL WHERE home_player_10=93450 AND season>='2014/2015'"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_11=NULL WHERE home_player_11=93450 AND season>='2014/2015'"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_1=NULL WHERE away_player_1=93450 AND season>='2014/2015'"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_2=NULL WHERE away_player_2=93450 AND season>='2014/2015'"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_3=NULL WHERE away_player_3=93450 AND season>='2014/2015'"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_4=NULL WHERE away_player_4=93450 AND season>='2014/2015'"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_5=NULL WHERE away_player_5=93450 AND season>='2014/2015'"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_6=NULL WHERE away_player_6=93450 AND season>='2014/2015'"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_7=NULL WHERE away_player_7=93450 AND season>='2014/2015'"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_8=NULL WHERE away_player_8=93450 AND season>='2014/2015'"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_9=NULL WHERE away_player_9=93450 AND season>='2014/2015'"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_10=NULL WHERE away_player_10=93450 AND season>='2014/2015'"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_11=NULL WHERE away_player_11=93450 AND season>='2014/2015'"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="Marco Reus",
+      instruction="I am Marco Reus, born 1989-05-31. My player FIFA API ID is 188350. I noticed that my player weight is incorrectly listed as 165kg; my actual weight is 172kg. Please authenticate me using my name, FIFA API ID, and birthday. Then update my player record to weight = 172. After updating, show me the updated player profile with player_api_id, name, and weight so I can verify the correction.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT player_api_id FROM Player WHERE player_name = 'Marco Reus' AND player_fifa_api_id = 188350 AND birthday = '1989-05-31 00:00:00'"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET weight = 172 WHERE player_fifa_api_id = 188350 AND player_name = 'Marco Reus' AND birthday = '1989-05-31 00:00:00'"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT player_api_id, player_name, weight FROM Player WHERE player_fifa_api_id = 188350 AND player_name = 'Marco Reus' AND birthday = '1989-05-31 00:00:00'"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="martin_analyst",
+      instruction="I am Martin, a team analyst. For match_api_id 2002108, I need to update the home goalkeeper to player_api_id 167094 (Sebastian Jung) and the home left back to player_api_id 145550 (Kevin Trapp). Please make these corrections for match_api_id 2002108, changing home_player_1 to 167094 and home_player_5 to 145550.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_1 = 167094 WHERE match_api_id = 2002108;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_5 = 145550 WHERE match_api_id = 2002108;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="system_admin",
+      instruction="I am an administrator and need to update the player profile for Sebastian Madera. His correct height is 192 and weight is 180. After updating, provide me a list of all matches from the 2015/2016 season where Sebastian Madera (player_api_id=69553) played, either as a home or away player.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height = 192, weight = 180 WHERE player_api_id = 69553;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT match_api_id, season, date, home_team_api_id, away_team_api_id, home_player_1, home_player_2, home_player_3, home_player_4, home_player_5, home_player_6, home_player_7, home_player_8, home_player_9, home_player_10, home_player_11, away_player_1, away_player_2, away_player_3, away_player_4, away_player_5, away_player_6, away_player_7, away_player_8, away_player_9, away_player_10, away_player_11 FROM Match WHERE season = '2015/2016' AND (home_player_1 = 69553 OR home_player_2 = 69553 OR home_player_3 = 69553 OR home_player_4 = 69553 OR home_player_5 = 69553 OR home_player_6 = 69553 OR home_player_7 = 69553 OR home_player_8 = 69553 OR home_player_9 = 69553 OR home_player_10 = 69553 OR home_player_11 = 69553 OR away_player_1 = 69553 OR away_player_2 = 69553 OR away_player_3 = 69553 OR away_player_4 = 69553 OR away_player_5 = 69553 OR away_player_6 = 69553 OR away_player_7 = 69553 OR away_player_8 = 69553 OR away_player_9 = 69553 OR away_player_10 = 69553 OR away_player_11 = 69553);"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="analyst-7823",
+      instruction="I am Alex Chen, email alex.chen1980@example.com. As part of an audit, I need to anonymize the player lineup for the match with match_api_id=875491. Please update the Match record for match_api_id=875491 and set all of its home_player_1, home_player_2, home_player_3, home_player_4, home_player_5, home_player_6, home_player_7, home_player_8, home_player_9, home_player_10, home_player_11, away_player_1, away_player_2, away_player_3, away_player_4, away_player_5, away_player_6, away_player_7, away_player_8, away_player_9, away_player_10, away_player_11 fields to NULL.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_1=NULL, home_player_2=NULL, home_player_3=NULL, home_player_4=NULL, home_player_5=NULL, home_player_6=NULL, home_player_7=NULL, home_player_8=NULL, home_player_9=NULL, home_player_10=NULL, home_player_11=NULL, away_player_1=NULL, away_player_2=NULL, away_player_3=NULL, away_player_4=NULL, away_player_5=NULL, away_player_6=NULL, away_player_7=NULL, away_player_8=NULL, away_player_9=NULL, away_player_10=NULL, away_player_11=NULL WHERE match_api_id=875491;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="Stuart",
+      instruction="My name is Stuart. I am a soccer data analyst, and I would like to update Kenny Miller's physical attributes for accuracy. His player_api_id is 34177. Please update his height to 180 and weight to 155 in the Player table.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT * FROM Player WHERE player_api_id = 34177;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height = 180, weight = 155 WHERE player_api_id = 34177;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="football-analyst-882",
+      instruction="As a football data analyst reviewing match records for accuracy, I have found that for match_api_id 1992095 (season '2015/2016', home_team_api_id 10192, away_team_api_id 9931, date '2015-09-23'), the home team's goal count was incorrectly recorded as 4 when it should be 5. Please update the Match record so home_team_goal = 5 where match_api_id = 1992095. Additionally, for the home team's goalkeeper, player_api_id 274787 ('Yvon Mvogo', player_fifa_api_id 206003), I need to update his Player_Attributes so that for date '2015-09-23', his overall_rating is set to 77 (was previously lower).",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_team_goal = 5 WHERE match_api_id = 1992095;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player_Attributes SET overall_rating = 77 WHERE player_api_id = 274787 AND date = '2015-09-23';"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="diego.espinoza.admin@fifa-db.com",
+      instruction="My name is Diego Espinoza (diego.espinoza.admin@fifa-db.com) and I am performing a data correction. Please update the birthdate for player 'Miguel Garcia' (player_api_id: 40606) to '1983-03-01 00:00:00', and update the weight to 161 and height to 179. Ensure all records in the Player table for player_api_id = 40606 are updated accordingly.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET birthday = '1983-03-01 00:00:00', weight = 161, height = 179 WHERE player_api_id = 40606;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="player_api_id:23916",
+      instruction="I am Morten Gamst Pedersen (player_api_id 23916) and I want to update my height to 185 and weight to 170 in the Player table. Additionally, for my latest entry in the Player_Attributes table, change preferred_foot to 'Left', overall_rating to 79, and potential to 81.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT * FROM Player WHERE player_api_id = 23916"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height = 185, weight = 170 WHERE player_api_id = 23916"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT id FROM Player_Attributes WHERE player_api_id = 23916 ORDER BY date DESC LIMIT 1"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player_Attributes SET preferred_foot = 'Left', overall_rating = 79, potential = 81 WHERE id = (SELECT id FROM Player_Attributes WHERE player_api_id = 23916 ORDER BY date DESC LIMIT 1)"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="coach_task1",
+      instruction="I am the coach and want to set Jeremy Perbet's (player_api_id: 17703, player_fifa_api_id: 150594) defensive_work_rate to 'High' for his match on 2012-08-04. Please update his Player_Attributes row where player_fifa_api_id = 150594 and date = '2012-08-04' to set defensive_work_rate to 'High'.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT id FROM Player_Attributes WHERE player_fifa_api_id = 150594 AND date = '2012-08-04';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player_Attributes SET defensive_work_rate = 'High' WHERE player_fifa_api_id = 150594 AND date = '2012-08-04';"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="frank_visser",
+      instruction="I am Frank Visser. Please list all matches (by match_api_id) in the Netherlands Eredivisie league (league_id=13274) from the 2015/2016 season where player Jetro Willems (player_api_id=240205) received a yellow card. For each such match, tell me the match_api_id, date, and the opposing team_api_id.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT match_api_id, date, CASE WHEN (home_player_1=240205 OR home_player_2=240205 OR home_player_3=240205 OR home_player_4=240205 OR home_player_5=240205 OR home_player_6=240205 OR home_player_7=240205 OR home_player_8=240205 OR home_player_9=240205 OR home_player_10=240205 OR home_player_11=240205) THEN away_team_api_id WHEN (away_player_1=240205 OR away_player_2=240205 OR away_player_3=240205 OR away_player_4=240205 OR away_player_5=240205 OR away_player_6=240205 OR away_player_7=240205 OR away_player_8=240205 OR away_player_9=240205 OR away_player_10=240205 OR away_player_11=240205) THEN home_team_api_id END as opposing_team_api_id FROM Match WHERE league_id=13274 AND season='2015/2016' AND ((home_player_1=240205 OR home_player_2=240205 OR home_player_3=240205 OR home_player_4=240205 OR home_player_5=240205 OR home_player_6=240205 OR home_player_7=240205 OR home_player_8=240205 OR home_player_9=240205 OR home_player_10=240205 OR home_player_11=240205) OR (away_player_1=240205 OR away_player_2=240205 OR away_player_3=240205 OR away_player_4=240205 OR away_player_5=240205 OR away_player_6=240205 OR away_player_7=240205 OR away_player_8=240205 OR away_player_9=240205 OR away_player_10=240205 OR away_player_11=240205)) AND card LIKE '%player1>240205%card_type>y%'"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="manager_userid_001",
+      instruction="I am the team manager and need to update player Nicklas Bendtner. His player_api_id is 36410. Please change his birthday to '1988-01-17 00:00:00' and his weight to 202. Also, for his player_fifa_api_id 167706, in the Player_Attributes table, for date '2016-05-01', set his overall_rating to 80.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET birthday = '1988-01-17 00:00:00', weight = 202 WHERE player_api_id = 36410;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player_Attributes SET overall_rating = 80 WHERE player_fifa_api_id = 167706 AND date = '2016-05-01';"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="luca_analyst_ita",
+      instruction="I am Luca, a football data analyst. Please insert a new Player_Attributes entry for Assane Diousse (player_api_id=612212, player_fifa_api_id=230144) on 2014-09-29, with overall_rating=76 and acceleration=84, all other fields NULL. After that, please confirm the latest (most recent) overall_rating and acceleration stored in Player_Attributes for player_api_id=612212.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "INSERT INTO Player_Attributes (player_fifa_api_id, player_api_id, date, overall_rating, acceleration) VALUES (230144, 612212, '2014-09-29', 76, 84);"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT overall_rating, acceleration FROM Player_Attributes WHERE player_api_id=612212 ORDER BY date DESC, id DESC LIMIT 1;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="rachel_davies",
+      instruction="My name is Rachel Davies. I am analyzing player Damien Duff, with player_api_id 34574. Please update all rows in the Player_Attributes table where player_api_id = 34574 and date >= '2013-07-01', setting preferred_foot to 'Right'. After the update, show me all the Player_Attributes records for player_api_id = 34574 to verify the change.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player_Attributes SET preferred_foot = 'Right' WHERE player_api_id = 34574 AND date >= '2013-07-01';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT * FROM Player_Attributes WHERE player_api_id = 34574;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="manager_fiona_kerr",
+      instruction="You are Fiona Kerr, a detail-focused team manager. For match_api_id 1991023, update the home team player lineup: set the goalkeeper (home_player_1) to player_api_id 23307 (Steve Simonsen), and replace the center-back (home_player_3) with player_api_id 32961 (Steven Milne). Confirm changes.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_1 = 23307 WHERE match_api_id = 1991023;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_3 = 32961 WHERE match_api_id = 1991023;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="player_api_id: 149150",
+      instruction="You are Denis Odoi, and your player_api_id is 149150. You want to update your weight in the system to 150 (from the previous 148), and then get a list of all matches where you appeared in the starting eleven for either the home or away team—specifically where you are assigned as home_player_4 or away_player_5. Please process the weight change and provide the full list of such matches with their match_api_id, date, home_team_goal, and away_team_goal.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET weight = 150 WHERE player_api_id = 149150;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT match_api_id, date, home_team_goal, away_team_goal FROM Match WHERE home_player_4 = 149150 OR away_player_5 = 149150;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="karima.werner-researcher",
+      instruction="My name is Karima Werner. I have noticed an error in the local database: the player Fabio Quagliarella (player_api_id 39540, player_fifa_api_id 159261) is listed with weight 174, but the correct weight should be 176. First, retrieve his current weight for confirmation. Then, update his weight to 176 using player_api_id 39540. Afterwards, show me the corrected record to confirm the update.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT player_name, player_api_id, player_fifa_api_id, weight FROM Player WHERE player_api_id = 39540"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET weight = 176 WHERE player_api_id = 39540"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT player_name, player_api_id, player_fifa_api_id, weight FROM Player WHERE player_api_id = 39540"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="analyst_001",
+      instruction="Update the height and weight for Oscar Cardozo (player_api_id=35425) in the Player table: set height to 192 and weight to 190. The player's name is Oscar Cardozo and the current player_api_id is 35425.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height = 192, weight = 190 WHERE player_api_id = 35425;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="staff_club",
+      instruction="As a club records manager, I need to update our player database. Locate the player record with player_api_id 150038 (named Braga), and update his birthday to '1983-06-10 00:00:00' and his height to 181. After correcting the player data, retrieve all matches from the 2014/2015 season where Braga (player_api_id 150038) appeared as the home team's player 9, showing the match date and the number of goals scored by the home team.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT * FROM Player WHERE player_api_id = 150038"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET birthday = '1983-06-10 00:00:00', height = 181 WHERE player_api_id = 150038"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT date, home_team_goal FROM Match WHERE season = '2014/2015' AND home_player_9 = 150038"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="34021",
+      instruction="My name is Marco Caneira (player_api_id: 34021, player_fifa_api_id: 6338). Please update my height in the Player table to 180 cm (it's currently incorrect). Also, for every match in the 2010/2011 season where I was a home player (i.e., where player_api_id=34021 appears in home_player_1 through home_player_11 in Match), update the goal field to the note: 'Height confirmed as 180cm per national team medical'.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height = 180 WHERE player_api_id = 34021;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET goal = 'Height confirmed as 180cm per national team medical' WHERE season = '2010/2011' AND (home_player_1 = 34021 OR home_player_2 = 34021 OR home_player_3 = 34021 OR home_player_4 = 34021 OR home_player_5 = 34021 OR home_player_6 = 34021 OR home_player_7 = 34021 OR home_player_8 = 34021 OR home_player_9 = 34021 OR home_player_10 = 34021 OR home_player_11 = 34021);"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="dataadmin123",
+      instruction="You are Robert from the Football Federation's Player Registry department. You noticed that player 'Anthony Forde' (player_api_id: 280862) has had a recent weight adjustment and a change of birthdate record (now should be 1993-12-01 instead of 1993-11-16). Please update his record as follows: set weight to 175 and birthday to '1993-12-01'. Immediately after, you want to update the player's latest attribute record in Player_Attributes (the record with the highest id for player_api_id 280862) and set overall_rating to 70 and stamina to 80, as you received verified reports from his club. Make these two updates for player_api_id 280862 now.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET weight = 175, birthday = '1993-12-01' WHERE player_api_id = 280862;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player_Attributes SET overall_rating = 70, stamina = 80 WHERE id = (SELECT MAX(id) FROM Player_Attributes WHERE player_api_id = 280862);"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="analyst-olympique-lyonnais",
+      instruction="I am updating the player database for Olympique Lyonnais. For player Alexandre Lacazette with player_api_id 169193, please set his height to 176.0 and his weight to 162 to reflect the latest medical records. Ensure these changes are made directly for player_api_id 169193 in the Player table.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT * FROM Player WHERE player_api_id = 169193"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height = 176.0, weight = 162 WHERE player_api_id = 169193"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="data_manager_portugal_liga_zon_sagres",
+      instruction="I am the data manager for Portugal Liga ZON Sagres. I need to (1) correct player Cedric Collet's records by setting his height to 185 and weight to 170 (player_api_id: 46890), and (2) update the home_team_goal to 3 for the match played on 2010-08-29 00:00:00, which is in stage 3 of season '2010/2011', home_team_api_id 10211, away_team_api_id 10215.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height = 185, weight = 170 WHERE player_api_id = 46890;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_team_goal = 3 WHERE season = '2010/2011' AND stage = 3 AND date = '2010-08-29 00:00:00' AND home_team_api_id = 10211 AND away_team_api_id = 10215;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="martin.lee",
+      instruction="Update Francis Coquelin's birthday (player_api_id=159594) in the Player table to '1991-05-14 00:00:00', then retrieve all matches in the Match table where player_api_id=159594 appeared in any home_player_1-11 or away_player_1-11, listing match_api_id and season for audit purposes.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET birthday='1991-05-14 00:00:00' WHERE player_api_id=159594;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT match_api_id, season FROM Match WHERE 159594 IN (home_player_1,home_player_2,home_player_3,home_player_4,home_player_5,home_player_6,home_player_7,home_player_8,home_player_9,home_player_10,home_player_11,away_player_1,away_player_2,away_player_3,away_player_4,away_player_5,away_player_6,away_player_7,away_player_8,away_player_9,away_player_10,away_player_11);"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="analyst_luca_bertoni",
+      instruction="My name is Luca Bertoni. I'm a football analyst and noticed an error in your database. Please update the defensive work rate for player Pajtim Kasami, who has player_api_id 197514 and player_fifa_api_id 197900, setting the defensive_work_rate to 'High' for the entry on '2010-04-14 00:00:00' in Player_Attributes. Please only update if the matching row exists for player_api_id=197514, player_fifa_api_id=197900, and date='2010-04-14 00:00:00'.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player_Attributes SET defensive_work_rate='High' WHERE player_api_id=197514 AND player_fifa_api_id=197900 AND date='2010-04-14 00:00:00';"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="user_001",
+      instruction="I'm a stats-focused fan and I've noticed Glen Johnson's (player_api_id=34036) birthday is incorrect in your database. It should be '1984-08-23 00:00:00'. Please update his birthday to this new value. After you make this change, I want to check that it's updated by showing me the next 3 matches he played after his birthday (player_api_id=34036), listing each match's date, home_team_api_id, away_team_api_id, and which of the teams he played for in those matches.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET birthday = '1984-08-23 00:00:00' WHERE player_api_id = 34036;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT date, home_team_api_id, away_team_api_id, CASE WHEN home_player_1=34036 OR home_player_2=34036 OR home_player_3=34036 OR home_player_4=34036 OR home_player_5=34036 OR home_player_6=34036 OR home_player_7=34036 OR home_player_8=34036 OR home_player_9=34036 OR home_player_10=34036 OR home_player_11=34036 THEN home_team_api_id WHEN away_player_1=34036 OR away_player_2=34036 OR away_player_3=34036 OR away_player_4=34036 OR away_player_5=34036 OR away_player_6=34036 OR away_player_7=34036 OR away_player_8=34036 OR away_player_9=34036 OR away_player_10=34036 OR away_player_11=34036 THEN away_team_api_id END AS player_team_api_id FROM Match WHERE (home_player_1=34036 OR home_player_2=34036 OR home_player_3=34036 OR home_player_4=34036 OR home_player_5=34036 OR home_player_6=34036 OR home_player_7=34036 OR home_player_8=34036 OR home_player_9=34036 OR home_player_10=34036 OR home_player_11=34036 OR away_player_1=34036 OR away_player_2=34036 OR away_player_3=34036 OR away_player_4=34036 OR away_player_5=34036 OR away_player_6=34036 OR away_player_7=34036 OR away_player_8=34036 OR away_player_9=34036 OR away_player_10=34036 OR away_player_11=34036) AND date > '1984-08-23 00:00:00' ORDER BY date ASC LIMIT 3;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="player_api_id: 150026",
+      instruction="I'm Pierre-Emerick Aubameyang (player_api_id: 150026, player_fifa_api_id: 188567). I recently changed my diet and would like to update my official weight to 180 lbs. After the update, show me the match_api_ids of the five most recent matches I appeared in, based on my player_api_id.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT * FROM Player WHERE player_api_id = 150026 AND player_fifa_api_id = 188567 AND player_name = 'Pierre-Emerick Aubameyang';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET weight = 180 WHERE player_api_id = 150026;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT match_api_id FROM Match WHERE (home_player_1 = 150026 OR home_player_2 = 150026 OR home_player_3 = 150026 OR home_player_4 = 150026 OR home_player_5 = 150026 OR home_player_6 = 150026 OR home_player_7 = 150026 OR home_player_8 = 150026 OR home_player_9 = 150026 OR home_player_10 = 150026 OR home_player_11 = 150026 OR away_player_1 = 150026 OR away_player_2 = 150026 OR away_player_3 = 150026 OR away_player_4 = 150026 OR away_player_5 = 150026 OR away_player_6 = 150026 OR away_player_7 = 150026 OR away_player_8 = 150026 OR away_player_9 = 150026 OR away_player_10 = 150026 OR away_player_11 = 150026) ORDER BY date DESC LIMIT 5;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="analyst_001",
+      instruction="You are updating historical player and match records. First, for player with player_api_id=79274 ('Luis Pedro Figueroa'), change his birthday to '1983-05-20 00:00:00' and weight to 168. Second, in the Match table, for match_api_id=859797, update home_player_8 to player_api_id=150024.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET birthday = '1983-05-20 00:00:00', weight = 168 WHERE player_api_id = 79274;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_8 = 150024 WHERE match_api_id = 859797;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="analyst_elisa_f",
+      instruction="You are Elisa F., updating your club's player database. 1) Update 'Pedro Santos' (player_api_id=281628) weight to 150. 2) Change his height to 175. 3) Add new player 'Marco Ferreira' with player_api_id=999999, player_fifa_api_id=555555, birthday='1995-06-18 00:00:00', height=180, weight=165. 4) Insert initial Player_Attributes for Marco: id=888888, player_fifa_api_id=555555, player_api_id=999999, date='2024-05-20', overall_rating=69, potential=78, preferred_foot='Right', attacking_work_rate='High', defensive_work_rate='Medium', crossing=61, finishing=58, heading_accuracy=59, short_passing=63, volleys=54, dribbling=70, curve=62, free_kick_accuracy=60, long_passing=65, ball_control=68, acceleration=72, sprint_speed=73, agility=67, reactions=66, balance=65, shot_power=64, jumping=70, stamina=68, strength=63, long_shots=60, aggression=55, interceptions=57, positioning=60, vision=65, penalties=59, marking=52, standing_tackle=60, sliding_tackle=55, gk_diving=13, gk_handling=14, gk_kicking=15, gk_positioning=11, gk_reflexes=16.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET weight = 150 WHERE player_api_id = 281628;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height = 175 WHERE player_api_id = 281628;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "INSERT INTO Player (player_api_id, player_name, player_fifa_api_id, birthday, height, weight) VALUES (999999, 'Marco Ferreira', 555555, '1995-06-18 00:00:00', 180, 165);"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "INSERT INTO Player_Attributes (id, player_fifa_api_id, player_api_id, date, overall_rating, potential, preferred_foot, attacking_work_rate, defensive_work_rate, crossing, finishing, heading_accuracy, short_passing, volleys, dribbling, curve, free_kick_accuracy, long_passing, ball_control, acceleration, sprint_speed, agility, reactions, balance, shot_power, jumping, stamina, strength, long_shots, aggression, interceptions, positioning, vision, penalties, marking, standing_tackle, sliding_tackle, gk_diving, gk_handling, gk_kicking, gk_positioning, gk_reflexes) VALUES (888888, 555555, 999999, '2024-05-20', 69, 78, 'Right', 'High', 'Medium', 61, 58, 59, 63, 54, 70, 62, 60, 65, 68, 72, 73, 67, 66, 65, 64, 70, 68, 63, 60, 55, 57, 60, 65, 59, 52, 60, 55, 13, 14, 15, 11, 16);"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="coach_task_user_001",
+      instruction="As the data admin for the club, I need to update two items: (1) Correct player_api_id 35708, whose name should be 'Michael Hennings' and birthday '1992-03-17 00:00:00'. (2) For match_api_id 1732972, this player featured for the home team, but there is a reporting error—the home_team_goal should be updated to 3. Please perform both updates now.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET player_name = 'Michael Hennings', birthday = '1992-03-17 00:00:00' WHERE player_api_id = 35708;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_team_goal = 3 WHERE match_api_id = 1732972;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="player_api_id_35644",
+      instruction="You are Antonio Mirante, and you wish to update your height and weight information. Please change your height to 194 and your weight to 195 in the Player table, identified by player_api_id 35644. Afterwards, show me all the matches where I played as the goalkeeper (i.e., where my player_api_id 35644 is in the home_player_1 or away_player_1 fields).",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height = 194, weight = 195 WHERE player_api_id = 35644;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT * FROM Match WHERE home_player_1 = 35644 OR away_player_1 = 35644;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="data_scientist_liam_oneill",
+      instruction="For player Matt Jarvis (player_api_id: 23538), update his height to 173 and birthday to '1986-05-21 00:00:00'. Then, list match_api_id and date of all matches where he was a home player in the 2009/2010 season for league 'England Premier League'.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height = 173, birthday = '1986-05-21 00:00:00' WHERE player_api_id = 23538;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT match_api_id, date FROM Match m JOIN League l ON m.league_id = l.id WHERE season = '2009/2010' AND l.name = 'England Premier League' AND (home_player_1 = 23538 OR home_player_2 = 23538 OR home_player_3 = 23538 OR home_player_4 = 23538 OR home_player_5 = 23538 OR home_player_6 = 23538 OR home_player_7 = 23538 OR home_player_8 = 23538 OR home_player_9 = 23538 OR home_player_10 = 23538 OR home_player_11 = 23538);"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="nl_eredivisie_analyst_2024",
+      instruction="I'm the data-entry analyst for the Netherlands Eredivisie. I need to update Kristoffer Peterson's defensive_work_rate. Please confirm his current defensive_work_rate in the Player_Attributes table for player_api_id 510399 and date '2015-10-01 00:00:00', then set his defensive_work_rate to 'high' for that date. Parameters: player_api_id=510399, date='2015-10-01 00:00:00', new value='high'.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT defensive_work_rate FROM Player_Attributes WHERE player_api_id=510399 AND date='2015-10-01 00:00:00';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player_Attributes SET defensive_work_rate='high' WHERE player_api_id=510399 AND date='2015-10-01 00:00:00';"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="67957",
+      instruction="My name is Kevin Geudens (player_api_id: 67957, player_fifa_api_id: 152371). I have recently lost some weight and want to update my weight in your records to 145. Also, could you list all the matches I participated in as a home player, including the match date and both team_api_ids for home and away? Please ensure my player information is correctly identified by my name and player_api_id before making changes.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT * FROM Player WHERE player_api_id = 67957 AND player_name = 'Kevin Geudens';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET weight = 145 WHERE player_api_id = 67957 AND player_name = 'Kevin Geudens';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT date, home_team_api_id, away_team_api_id FROM Match WHERE home_player_1 = 67957 OR home_player_2 = 67957 OR home_player_3 = 67957 OR home_player_4 = 67957 OR home_player_5 = 67957 OR home_player_6 = 67957 OR home_player_7 = 67957 OR home_player_8 = 67957 OR home_player_9 = 67957 OR home_player_10 = 67957 OR home_player_11 = 67957;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="coach_analytics_van_de_beek",
+      instruction="I am analyzing Donny van de Beek's development. First, find all matches from seasons 2014/2015 and 2015/2016 where Donny van de Beek (player_api_id: 612836) played, and tell me the match_api_id, date, season, and whether he was on the home or away team. Second, update his height to 187.0 and his weight to 172. Third, confirm the update by showing Donny van de Beek's player_api_id, player_name, height, and weight.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT match_api_id, date, season, 'home' AS team_side FROM Match WHERE season IN ('2014/2015','2015/2016') AND (home_player_1=612836 OR home_player_2=612836 OR home_player_3=612836 OR home_player_4=612836 OR home_player_5=612836 OR home_player_6=612836 OR home_player_7=612836 OR home_player_8=612836 OR home_player_9=612836 OR home_player_10=612836 OR home_player_11=612836) UNION ALL SELECT match_api_id, date, season, 'away' AS team_side FROM Match WHERE season IN ('2014/2015','2015/2016') AND (away_player_1=612836 OR away_player_2=612836 OR away_player_3=612836 OR away_player_4=612836 OR away_player_5=612836 OR away_player_6=612836 OR away_player_7=612836 OR away_player_8=612836 OR away_player_9=612836 OR away_player_10=612836 OR away_player_11=612836);"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height=187.0, weight=172 WHERE player_api_id=612836;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT player_api_id, player_name, height, weight FROM Player WHERE player_api_id=612836;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="analyst_456",
+      instruction="My name is Sandra Diaz, performance analyst for Spain LIGA BBVA. I've been reviewing the 2012/2013 season, stage 19 match on 2013-01-12 (match_api_id: 1260336) where player 'Marc Valiente' (player_api_id: 41166) started for the home team. I noticed our player record for him is wrong. His preferred_foot should be 'Left' for the Player_Attributes record matching player_api_id 41166 and date '2013-01-12'. Please update that value and confirm once it's fixed.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player_Attributes SET preferred_foot = 'Left' WHERE player_api_id = 41166 AND date = '2013-01-12';"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="data_analyst_10189",
+      instruction="I am a data analyst for the club corresponding to team_api_id 10189. For privacy, I need you to fully anonymize the player with player_api_id 68253 (Benedikt Hoewedes). Please update the Player table to set player_name to 'Anonymous Player' and birthday, height, weight to NULL for this player. In the Match table, set all columns that can have player_api_id 68253 (home_player_1 to home_player_11, away_player_1 to away_player_11) to NULL wherever his id appears. Finally, in Player_Attributes, set overall_rating and potential to NULL for player_api_id 68253.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET player_name = 'Anonymous Player', birthday = NULL, height = NULL, weight = NULL WHERE player_api_id = 68253;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_1 = NULL WHERE home_player_1 = 68253;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_2 = NULL WHERE home_player_2 = 68253;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_3 = NULL WHERE home_player_3 = 68253;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_4 = NULL WHERE home_player_4 = 68253;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_5 = NULL WHERE home_player_5 = 68253;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_6 = NULL WHERE home_player_6 = 68253;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_7 = NULL WHERE home_player_7 = 68253;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_8 = NULL WHERE home_player_8 = 68253;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_9 = NULL WHERE home_player_9 = 68253;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_10 = NULL WHERE home_player_10 = 68253;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_11 = NULL WHERE home_player_11 = 68253;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_1 = NULL WHERE away_player_1 = 68253;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_2 = NULL WHERE away_player_2 = 68253;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_3 = NULL WHERE away_player_3 = 68253;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_4 = NULL WHERE away_player_4 = 68253;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_5 = NULL WHERE away_player_5 = 68253;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_6 = NULL WHERE away_player_6 = 68253;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_7 = NULL WHERE away_player_7 = 68253;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_8 = NULL WHERE away_player_8 = 68253;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_9 = NULL WHERE away_player_9 = 68253;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_10 = NULL WHERE away_player_10 = 68253;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_11 = NULL WHERE away_player_11 = 68253;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player_Attributes SET overall_rating = NULL, potential = NULL WHERE player_api_id = 68253;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="admin",
+      instruction="I am reviewing historical records and need to correct some info. Please update the player record for player_api_id 29587 to set player_name='Maximiliano Moralez' and birthday='1987-02-28 00:00:00'. After updating, provide a list of all match_api_id and date from the Match table where player_api_id 29587 scored any goal (his player_api_id should appear as player1 in the <goal> field of the Match table XML).",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET player_name = 'Maximiliano Moralez', birthday = '1987-02-28 00:00:00' WHERE player_api_id = 29587;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT match_api_id, date FROM Match WHERE goal LIKE '%<player1>29587</player1>%';"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="sofie_dumesnil",
+      instruction="You are Sofie Dumesnil. For player Jeremy Dumesnil (player_api_id: 242234), update his weight to 170 in the Player table. Then add a new record to Player_Attributes for date '2015-01-26' with: player_fifa_api_id: 200180, player_api_id: 242234, overall_rating: 68, potential: 70, preferred_foot: 'Right', attacking_work_rate: 'Medium', defensive_work_rate: 'High', crossing: 65, finishing: 60, heading_accuracy: 64, short_passing: 67, volleys: 50, dribbling: 62, curve: 56, free_kick_accuracy: 52, long_passing: 63, ball_control: 66, acceleration: 68, sprint_speed: 70, agility: 65, reactions: 60, balance: 70, shot_power: 65, jumping: 72, stamina: 73, strength: 75, long_shots: 60, aggression: 68, interceptions: 62, positioning: 61, vision: 62, penalties: 59, marking: 66, standing_tackle: 67, sliding_tackle: 68, gk_diving: 10, gk_handling: 8, gk_kicking: 11, gk_positioning: 7, gk_reflexes: 9.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET weight = 170 WHERE player_api_id = 242234;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "INSERT INTO Player_Attributes (player_fifa_api_id, player_api_id, date, overall_rating, potential, preferred_foot, attacking_work_rate, defensive_work_rate, crossing, finishing, heading_accuracy, short_passing, volleys, dribbling, curve, free_kick_accuracy, long_passing, ball_control, acceleration, sprint_speed, agility, reactions, balance, shot_power, jumping, stamina, strength, long_shots, aggression, interceptions, positioning, vision, penalties, marking, standing_tackle, sliding_tackle, gk_diving, gk_handling, gk_kicking, gk_positioning, gk_reflexes) VALUES (200180, 242234, '2015-01-26', 68, 70, 'Right', 'Medium', 'High', 65, 60, 64, 67, 50, 62, 56, 52, 63, 66, 68, 70, 65, 60, 70, 65, 72, 73, 75, 60, 68, 62, 61, 62, 59, 66, 67, 68, 10, 8, 11, 7, 9);"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="manager_scotland_rangers",
+      instruction="You are the team manager for Rangers FC. You would like to update the Player_Attributes for Kenny Miller (player_api_id=34177, player_fifa_api_id=51353) for the date '2010-05-05', setting overall_rating=82, potential=84, preferred_foot='Right', attacking_work_rate='High', defensive_work_rate='Medium', finishing=78, sprint_speed=85, stamina=82, vision=74. After this, for the next scheduled match for your team (home_team_api_id=8548) in season '2009/2010', you want to assign Kenny Miller (player_api_id=34177) as the center forward (home_player_10). The match_api_id is 820498.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "INSERT INTO Player_Attributes (player_fifa_api_id, player_api_id, date, overall_rating, potential, preferred_foot, attacking_work_rate, defensive_work_rate, finishing, sprint_speed, stamina, vision) VALUES (51353, 34177, '2010-05-05', 82, 84, 'Right', 'High', 'Medium', 78, 85, 82, 74);"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_10=34177 WHERE match_api_id=820498;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="team_manager_2024",
+      instruction="I am the club's digital team manager. Please mark player Bruno Miguel (player_api_id=98383) as an 'Alumni Spotlight' in the Player table by adding a boolean column is_alumni_spotlight and setting it to True for him. Next, in the Match table, add a column alumni_spotlight_note (TEXT). Then, for every match from season '2009/2010' where Bruno Miguel played as a starting player (i.e., as any home_player_1 through home_player_11 or away_player_1 through away_player_11 and with player_api_id=98383), set alumni_spotlight_note to 'Featured in Alumni Spotlight Apr 2024'.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "ALTER TABLE Player ADD COLUMN is_alumni_spotlight BOOLEAN;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET is_alumni_spotlight=1 WHERE player_api_id=98383;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "ALTER TABLE Match ADD COLUMN alumni_spotlight_note TEXT;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET alumni_spotlight_note='Featured in Alumni Spotlight Apr 2024' WHERE season='2009/2010' AND (home_player_1=98383 OR home_player_2=98383 OR home_player_3=98383 OR home_player_4=98383 OR home_player_5=98383 OR home_player_6=98383 OR home_player_7=98383 OR home_player_8=98383 OR home_player_9=98383 OR home_player_10=98383 OR home_player_11=98383 OR away_player_1=98383 OR away_player_2=98383 OR away_player_3=98383 OR away_player_4=98383 OR away_player_5=98383 OR away_player_6=98383 OR away_player_7=98383 OR away_player_8=98383 OR away_player_9=98383 OR away_player_10=98383 OR away_player_11=98383);"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="admin123",
+      instruction="I am the data manager. Please update the record for the player with player_name 'Wayne Bridge': if his current height is 180.34, set his height to 181 and his weight to 179.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height = 181, weight = 179 WHERE player_name = 'Wayne Bridge' AND height = 180.34;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="23335",
+      instruction="I am Oliver Murray (oliver.murray8791@scoutmail.com), a football analyst seeking to improve data accuracy. I found that player_api_id 23335 (Jackie McNamara) has an incorrect height in the Player table—it should be updated to 178. Please update his height accordingly. After that, add a new integer column 'needs_review' (default 0) to the Match table. Then, for every match record where Jackie McNamara (player_api_id 23335) appears in any player position (home_player_1 through home_player_11 or away_player_1 through away_player_11), set needs_review=1 so these can be flagged for further analysis. Explicitly include all player slot fields in the update.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height=178 WHERE player_api_id=23335;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "ALTER TABLE Match ADD COLUMN needs_review INTEGER DEFAULT 0;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET needs_review=1 WHERE home_player_1=23335 OR home_player_2=23335 OR home_player_3=23335 OR home_player_4=23335 OR home_player_5=23335 OR home_player_6=23335 OR home_player_7=23335 OR home_player_8=23335 OR home_player_9=23335 OR home_player_10=23335 OR home_player_11=23335 OR away_player_1=23335 OR away_player_2=23335 OR away_player_3=23335 OR away_player_4=23335 OR away_player_5=23335 OR away_player_6=23335 OR away_player_7=23335 OR away_player_8=23335 OR away_player_9=23335 OR away_player_10=23335 OR away_player_11=23335;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="player_api_id: 463810",
+      instruction="You are Michal Koj, and you recently noticed your listed height and weight are incorrect. You want to update your height to 189 (from 187.96) and your weight to 182 (from 179). Please make this change for player_api_id 463810, and show me a list of all matches where I appeared as a player (in any team or position).",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height = 189, weight = 182 WHERE player_api_id = 463810 AND player_name = 'Michal Koj';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT match_api_id, season, date, home_team_api_id, away_team_api_id FROM Match WHERE 463810 IN (home_player_1, home_player_2, home_player_3, home_player_4, home_player_5, home_player_6, home_player_7, home_player_8, home_player_9, home_player_10, home_player_11, away_player_1, away_player_2, away_player_3, away_player_4, away_player_5, away_player_6, away_player_7, away_player_8, away_player_9, away_player_10, away_player_11);"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="club_admin_2024",
+      instruction="As the club administrator, I need to update player Henri Saivet's details due to recent medical information. Please set the height to 178, weight to 165, and correct his name spelling to 'Henry Saivet'. His player_api_id is 94010. Make sure these values are reflected for player_api_id 94010.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET player_name = 'Henry Saivet', height = 178, weight = 165 WHERE player_api_id = 94010;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="coach_peter",
+      instruction="I am Coach Peter. Before updating a player's physical stats, I want to confirm that Thomas Mueller (player_api_id=116772) actually played as an away player in match_api_id=1732720. If so, update his height to 186 and weight to 167 in the Player table.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT * FROM Match WHERE match_api_id=1732720 AND (away_player_1=116772 OR away_player_2=116772 OR away_player_3=116772 OR away_player_4=116772 OR away_player_5=116772 OR away_player_6=116772 OR away_player_7=116772 OR away_player_8=116772 OR away_player_9=116772 OR away_player_10=116772 OR away_player_11=116772);"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height=186, weight=167 WHERE player_api_id=116772;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="marta.ferreira",
+      instruction="You are Marta Ferreira, club manager. Update Michael Uchebo's (player_api_id 193410) profile to new height 194 and weight 192, and register him with team_api_id 7844 for the 2016/2017 season by inserting a Team_Attributes record for that team (team_fifa_api_id 0, date '2016-08-01', buildUpPlaySpeed=65, buildUpPlaySpeedClass='Normal', buildUpPlayDribbling=55, buildUpPlayDribblingClass='Normal', buildUpPlayPassing=60, buildUpPlayPassingClass='Normal', buildUpPlayPositioningClass='Organised', chanceCreationPassing=62, chanceCreationPassingClass='Normal', chanceCreationCrossing=60, chanceCreationCrossingClass='Normal', chanceCreationShooting=59, chanceCreationShootingClass='Normal', chanceCreationPositioningClass='Organised', defencePressure=70, defencePressureClass='Medium', defenceAggression=65, defenceAggressionClass='Medium', defenceTeamWidth=60, defenceTeamWidthClass='Medium', defenceDefenderLineClass='Cover').",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height=194, weight=192 WHERE player_api_id=193410;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "INSERT INTO Team_Attributes (team_fifa_api_id, team_api_id, date, buildUpPlaySpeed, buildUpPlaySpeedClass, buildUpPlayDribbling, buildUpPlayDribblingClass, buildUpPlayPassing, buildUpPlayPassingClass, buildUpPlayPositioningClass, chanceCreationPassing, chanceCreationPassingClass, chanceCreationCrossing, chanceCreationCrossingClass, chanceCreationShooting, chanceCreationShootingClass, chanceCreationPositioningClass, defencePressure, defencePressureClass, defenceAggression, defenceAggressionClass, defenceTeamWidth, defenceTeamWidthClass, defenceDefenderLineClass) VALUES (0, 7844, '2016-08-01', 65, 'Normal', 55, 'Normal', 60, 'Normal', 'Organised', 62, 'Normal', 60, 'Normal', 59, 'Normal', 'Organised', 70, 'Medium', 65, 'Medium', 60, 'Medium', 'Cover');"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="chiellini_analyst",
+      instruction="You are tasked to (1) update Giorgio Chiellini's height to 189 and weight to 193 in the Player table (player_api_id = 41884), and (2) for every match in the 2013/2014 season where Chiellini was the home team's center forward (home_player_10) (i.e. Match.home_player_10 = 41884 AND season = '2013/2014'), change his position to home_second_forward (set Match.home_player_9 = 41884), and clear home_player_10 (set it to NULL), leaving all other players untouched.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height = 189, weight = 193 WHERE player_api_id = 41884;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_9 = 41884 WHERE home_player_10 = 41884 AND season = '2013/2014';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_10 = NULL WHERE home_player_10 = 41884 AND season = '2013/2014';"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="league_official@ekstraklasa.pl",
+      instruction="You are a league official for Poland Ekstraklasa. You need to update the heights for players Damian Dabrowski (player_api_id: 196238) to 180, Adam Marciniak (player_api_id: 69518) to 185, and Wojciech Kaczmarek (player_api_id: 93450) to 201 due to recent verifications. Before making the changes, confirm their current heights. After updating, provide the updated heights to ensure the changes were successful.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT player_api_id, player_name, height FROM Player WHERE player_api_id IN (196238, 69518, 93450);"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height = 180 WHERE player_api_id = 196238;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height = 185 WHERE player_api_id = 69518;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height = 201 WHERE player_api_id = 93450;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT player_api_id, player_name, height FROM Player WHERE player_api_id IN (196238, 69518, 93450);"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="Sam Clark",
+      instruction="You are Sam Clark, a data administrator. Please update Victor Moses' (player_api_id 106228) height to 180 and change his birthday to 1990-12-10 00:00:00 in the Player table. Also, update the Match record for match_api_id 1724039 (2014-09-29) to set home_team_goal from 1 to 2.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height=180, birthday='1990-12-10 00:00:00' WHERE player_api_id=106228;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_team_goal=2 WHERE match_api_id=1724039;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="mark.bakker@clubmail.nl",
+      instruction="You are Mark Bakker, club staff (mark.bakker@clubmail.nl). You need to correct Fernando Lewis's (player_api_id=293360) birth date in the database to '1993-02-01 00:00:00', but first, confirm that he played in the match with match_api_id=1712529.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT match_api_id FROM Match WHERE match_api_id=1712529 AND (away_player_11=293360 OR away_player_10=293360 OR away_player_9=293360 OR away_player_8=293360 OR away_player_7=293360 OR away_player_6=293360 OR away_player_5=293360 OR away_player_4=293360 OR away_player_3=293360 OR away_player_2=293360 OR away_player_1=293360 OR home_player_11=293360 OR home_player_10=293360 OR home_player_9=293360 OR home_player_8=293360 OR home_player_7=293360 OR home_player_6=293360 OR home_player_5=293360 OR home_player_4=293360 OR home_player_3=293360 OR home_player_2=293360 OR home_player_1=293360);"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET birthday='1993-02-01 00:00:00' WHERE player_api_id=293360;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="player_api_id:27299",
+      instruction="You are Lars, a German football stats historian. Update the Player table so that Manuel Neuer's height is recorded as 193 cm, correcting the official database entry. Use parameters: player_api_id=27299, player_name='Manuel Neuer', player_fifa_api_id=167495, birthday='1986-03-27 00:00:00', height=193.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height=193 WHERE player_api_id=27299 AND player_name='Manuel Neuer' AND player_fifa_api_id=167495 AND birthday='1986-03-27 00:00:00';"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="admin001",
+      instruction="You are the database admin. Please update Jack Wilshere's (player_api_id: 143793, player_fifa_api_id: 189461) player attributes as follows: for the row where date = '2015-07-01', set 'overall_rating' to 85 and 'defensive_work_rate' to 'medium'. After these updates, list all matches where Jack Wilshere (player_api_id: 143793) played as home_player_9, including the match_api_id, date, and away_team_api_id.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player_Attributes SET overall_rating = 85 WHERE player_api_id = 143793 AND player_fifa_api_id = 189461 AND date = '2015-07-01';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player_Attributes SET defensive_work_rate = 'medium' WHERE player_api_id = 143793 AND player_fifa_api_id = 189461 AND date = '2015-07-01';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT match_api_id, date, away_team_api_id FROM Match WHERE home_player_9 = 143793;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="analyst_george_001",
+      instruction="I am George, a soccer performance analyst. Please help me update player Scott Brown’s weight in the Player table to 195 (his player_api_id is 47559). Once the update is complete, show me the three most recent matches from the Match table in which Scott Brown (player_api_id 47559) appeared as either a home or away player. I require exact IDs and dates for both operations.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET weight=195 WHERE player_api_id=47559;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT match_api_id, date FROM Match WHERE (home_player_1=47559 OR home_player_2=47559 OR home_player_3=47559 OR home_player_4=47559 OR home_player_5=47559 OR home_player_6=47559 OR home_player_7=47559 OR home_player_8=47559 OR home_player_9=47559 OR home_player_10=47559 OR home_player_11=47559 OR away_player_1=47559 OR away_player_2=47559 OR away_player_3=47559 OR away_player_4=47559 OR away_player_5=47559 OR away_player_6=47559 OR away_player_7=47559 OR away_player_8=47559 OR away_player_9=47559 OR away_player_10=47559 OR away_player_11=47559) ORDER BY date DESC LIMIT 3;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="Roberto",
+      instruction="You are Roberto, a data manager for Italy Serie A. While auditing the database, you discovered Zlatan Ibrahimovic (player_api_id=35724) has the wrong date of birth, height, and weight in your records. The correct details should be: birthday '1981-10-03 00:00:00', height 195, and weight 210. Please update the 'Player' table for player_api_id=35724 to reflect: birthday '1981-10-03 00:00:00', height 195, weight 210.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET birthday = '1981-10-03 00:00:00', height = 195, weight = 210 WHERE player_api_id = 35724;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="Claire Dubois",
+      instruction="You are Claire Dubois, a club data archivist. Recent research confirms that player Granddi Ngoyi (player_api_id=94044, player_fifa_api_id=184270) was actually born on 1988-04-30, not 1988-05-17. Please update his birthday to '1988-04-30 00:00:00' in the database and confirm the update by retrieving his current record for review.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET birthday = '1988-04-30 00:00:00' WHERE player_api_id = 94044 AND player_fifa_api_id = 184270;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT * FROM Player WHERE player_api_id = 94044 AND player_fifa_api_id = 184270;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="user_manager_001",
+      instruction="I am an analyst for Filippo Porcari (player_api_id=74305) and wish to track his development. First, show me the recent matches in which he participated (player_api_id=74305), as I want to correlate match data with his attribute progression. Next, please insert a new Player_Attributes record for him with these details: player_api_id=74305, player_fifa_api_id=158738, date='2012-05-01 00:00:00', overall_rating=73, potential=75, preferred_foot='Right', attacking_work_rate='Medium', defensive_work_rate='High', crossing=62, finishing=52, heading_accuracy=65, short_passing=72, volleys=50, dribbling=68, curve=56, free_kick_accuracy=55, long_passing=70, ball_control=71, acceleration=69, sprint_speed=71, agility=66, reactions=70, balance=65, shot_power=67, jumping=67, stamina=74, strength=69, long_shots=56, aggression=63, interceptions=71, positioning=67, vision=68, penalties=53, marking=73, standing_tackle=74, sliding_tackle=68, gk_diving=10, gk_handling=10, gk_kicking=13, gk_positioning=9, gk_reflexes=13. This should reflect my updated evaluation after reviewing his performances.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT match_api_id, date, home_team_api_id, away_team_api_id, home_player_1, home_player_2, home_player_3, home_player_4, home_player_5, home_player_6, home_player_7, home_player_8, home_player_9, home_player_10, home_player_11, away_player_1, away_player_2, away_player_3, away_player_4, away_player_5, away_player_6, away_player_7, away_player_8, away_player_9, away_player_10, away_player_11 FROM Match WHERE home_player_1=74305 OR home_player_2=74305 OR home_player_3=74305 OR home_player_4=74305 OR home_player_5=74305 OR home_player_6=74305 OR home_player_7=74305 OR home_player_8=74305 OR home_player_9=74305 OR home_player_10=74305 OR home_player_11=74305 OR away_player_1=74305 OR away_player_2=74305 OR away_player_3=74305 OR away_player_4=74305 OR away_player_5=74305 OR away_player_6=74305 OR away_player_7=74305 OR away_player_8=74305 OR away_player_9=74305 OR away_player_10=74305 OR away_player_11=74305 ORDER BY date DESC"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "INSERT INTO Player_Attributes (player_fifa_api_id, player_api_id, date, overall_rating, potential, preferred_foot, attacking_work_rate, defensive_work_rate, crossing, finishing, heading_accuracy, short_passing, volleys, dribbling, curve, free_kick_accuracy, long_passing, ball_control, acceleration, sprint_speed, agility, reactions, balance, shot_power, jumping, stamina, strength, long_shots, aggression, interceptions, positioning, vision, penalties, marking, standing_tackle, sliding_tackle, gk_diving, gk_handling, gk_kicking, gk_positioning, gk_reflexes) VALUES (158738, 74305, '2012-05-01 00:00:00', 73, 75, 'Right', 'Medium', 'High', 62, 52, 65, 72, 50, 68, 56, 55, 70, 71, 69, 71, 66, 70, 65, 67, 67, 74, 69, 56, 63, 71, 67, 68, 53, 73, 74, 68, 10, 10, 13, 9, 13)"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="league_statistician",
+      instruction="I am the league statistician. Please update the player record for Antonio Marin Molina (player_api_id 517294) so that his weight is 170 and his birthday is 1996-06-20. After updating, show me a list of all matches where Antonio Marin Molina appeared as home_player_2, including the match_api_id, home_team_api_id, and away_team_api_id.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET weight = 170, birthday = '1996-06-20' WHERE player_api_id = 517294;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT match_api_id, home_team_api_id, away_team_api_id FROM Match WHERE home_player_2 = 517294;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="data_analyst_01",
+      instruction="Hello, I am updating our player physical records for the database. Please update the height and weight for 'David Lomban' (player_api_id: 108572) to 189 (height in cm) and 188 (weight in lbs), based on a recent medical report. After updating, fetch and show me his 3 most recent matches for review.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height=189, weight=188 WHERE player_api_id=108572"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT match_api_id, date, home_team_api_id, away_team_api_id, home_player_1, home_player_2, home_player_3, home_player_4, home_player_5, home_player_6, home_player_7, home_player_8, home_player_9, home_player_10, home_player_11, away_player_1, away_player_2, away_player_3, away_player_4, away_player_5, away_player_6, away_player_7, away_player_8, away_player_9, away_player_10, away_player_11 FROM Match WHERE 108572 IN (home_player_1,home_player_2,home_player_3,home_player_4,home_player_5,home_player_6,home_player_7,home_player_8,home_player_9,home_player_10,home_player_11,away_player_1,away_player_2,away_player_3,away_player_4,away_player_5,away_player_6,away_player_7,away_player_8,away_player_9,away_player_10,away_player_11) ORDER BY date DESC LIMIT 3"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="olivia.stats2024@example.com",
+      instruction="My name is Olivia and my email is olivia.stats2024@example.com. I need to correct historical records for two players based on new measurements: For Ricardo Ferreira (player_api_id=242874), his height should be 191 and his weight should be 170. For Mario Sampirisi (player_api_id=299411), his height should be 188 and his weight should be 185. After updating these, list all matches from the 2012/2013 season where either of these players appeared as a home or away player.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height=191, weight=170 WHERE player_api_id=242874;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height=188, weight=185 WHERE player_api_id=299411;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT * FROM Match WHERE season='2012/2013' AND (home_player_1=242874 OR home_player_2=242874 OR home_player_3=242874 OR home_player_4=242874 OR home_player_5=242874 OR home_player_6=242874 OR home_player_7=242874 OR home_player_8=242874 OR home_player_9=242874 OR home_player_10=242874 OR home_player_11=242874 OR away_player_1=242874 OR away_player_2=242874 OR away_player_3=242874 OR away_player_4=242874 OR away_player_5=242874 OR away_player_6=242874 OR away_player_7=242874 OR away_player_8=242874 OR away_player_9=242874 OR away_player_10=242874 OR away_player_11=242874 OR home_player_1=299411 OR home_player_2=299411 OR home_player_3=299411 OR home_player_4=299411 OR home_player_5=299411 OR home_player_6=299411 OR home_player_7=299411 OR home_player_8=299411 OR home_player_9=299411 OR home_player_10=299411 OR home_player_11=299411 OR away_player_1=299411 OR away_player_2=299411 OR away_player_3=299411 OR away_player_4=299411 OR away_player_5=299411 OR away_player_6=299411 OR away_player_7=299411 OR away_player_8=299411 OR away_player_9=299411 OR away_player_10=299411 OR away_player_11=299411);"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="data_manager_01",
+      instruction="I am the data integrity manager. I need you to permanently remove all references to player with player_api_id 15403 from the database, as required by recent regulations. This includes: (1) deleting their row from the Player table where player_api_id = 15403, (2) deleting all Player_Attributes records with player_api_id = 15403, and (3) updating the Match table by setting to NULL any home_player_X, away_player_X, home_player_Y, away_player_Y, home_player_1 through home_player_11, and away_player_1 through away_player_11 fields in which the value equals 15403. All actions must explicitly use player_api_id = 15403.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "DELETE FROM Player_Attributes WHERE player_api_id = 15403;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "DELETE FROM Player WHERE player_api_id = 15403;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_X1 = NULL WHERE home_player_X1 = 15403;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_X2 = NULL WHERE home_player_X2 = 15403;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_X3 = NULL WHERE home_player_X3 = 15403;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_X4 = NULL WHERE home_player_X4 = 15403;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_X5 = NULL WHERE home_player_X5 = 15403;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_X6 = NULL WHERE home_player_X6 = 15403;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_X7 = NULL WHERE home_player_X7 = 15403;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_X8 = NULL WHERE home_player_X8 = 15403;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_X9 = NULL WHERE home_player_X9 = 15403;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_X10 = NULL WHERE home_player_X10 = 15403;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_X11 = NULL WHERE home_player_X11 = 15403;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_X1 = NULL WHERE away_player_X1 = 15403;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_X2 = NULL WHERE away_player_X2 = 15403;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_X3 = NULL WHERE away_player_X3 = 15403;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_X4 = NULL WHERE away_player_X4 = 15403;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_X5 = NULL WHERE away_player_X5 = 15403;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_X6 = NULL WHERE away_player_X6 = 15403;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_X7 = NULL WHERE away_player_X7 = 15403;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_X8 = NULL WHERE away_player_X8 = 15403;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_X9 = NULL WHERE away_player_X9 = 15403;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_X10 = NULL WHERE away_player_X10 = 15403;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_X11 = NULL WHERE away_player_X11 = 15403;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_Y1 = NULL WHERE home_player_Y1 = 15403;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_Y2 = NULL WHERE home_player_Y2 = 15403;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_Y3 = NULL WHERE home_player_Y3 = 15403;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_Y4 = NULL WHERE home_player_Y4 = 15403;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_Y5 = NULL WHERE home_player_Y5 = 15403;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_Y6 = NULL WHERE home_player_Y6 = 15403;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_Y7 = NULL WHERE home_player_Y7 = 15403;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_Y8 = NULL WHERE home_player_Y8 = 15403;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_Y9 = NULL WHERE home_player_Y9 = 15403;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_Y10 = NULL WHERE home_player_Y10 = 15403;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_Y11 = NULL WHERE home_player_Y11 = 15403;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_Y1 = NULL WHERE away_player_Y1 = 15403;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_Y2 = NULL WHERE away_player_Y2 = 15403;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_Y3 = NULL WHERE away_player_Y3 = 15403;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_Y4 = NULL WHERE away_player_Y4 = 15403;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_Y5 = NULL WHERE away_player_Y5 = 15403;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_Y6 = NULL WHERE away_player_Y6 = 15403;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_Y7 = NULL WHERE away_player_Y7 = 15403;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_Y8 = NULL WHERE away_player_Y8 = 15403;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_Y9 = NULL WHERE away_player_Y9 = 15403;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_Y10 = NULL WHERE away_player_Y10 = 15403;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_Y11 = NULL WHERE away_player_Y11 = 15403;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_1 = NULL WHERE home_player_1 = 15403;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_2 = NULL WHERE home_player_2 = 15403;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_3 = NULL WHERE home_player_3 = 15403;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_4 = NULL WHERE home_player_4 = 15403;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_5 = NULL WHERE home_player_5 = 15403;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_6 = NULL WHERE home_player_6 = 15403;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_7 = NULL WHERE home_player_7 = 15403;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_8 = NULL WHERE home_player_8 = 15403;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_9 = NULL WHERE home_player_9 = 15403;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_10 = NULL WHERE home_player_10 = 15403;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_11 = NULL WHERE home_player_11 = 15403;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_1 = NULL WHERE away_player_1 = 15403;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_2 = NULL WHERE away_player_2 = 15403;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_3 = NULL WHERE away_player_3 = 15403;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_4 = NULL WHERE away_player_4 = 15403;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_5 = NULL WHERE away_player_5 = 15403;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_6 = NULL WHERE away_player_6 = 15403;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_7 = NULL WHERE away_player_7 = 15403;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_8 = NULL WHERE away_player_8 = 15403;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_9 = NULL WHERE away_player_9 = 15403;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_10 = NULL WHERE away_player_10 = 15403;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_11 = NULL WHERE away_player_11 = 15403;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="analyst_team8686",
+      instruction="You are the official performance analyst for team_api_id=8686. After reviewing all matches in the 2009/2010 season, you determine that Marco Cassetti (player_api_id=31938) consistently outperformed his existing rating. Please update ALL entries in the Player_Attributes table for Marco Cassetti where the date is within the 2009/2010 season (between 2009-07-01 and 2010-06-30) to set his overall_rating to 80. Confirm all necessary parameters are included: player_api_id=31938, new overall_rating=80, date between '2009-07-01' and '2010-06-30'.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player_Attributes SET overall_rating=80 WHERE player_api_id=31938 AND date >= '2009-07-01' AND date <= '2010-06-30';"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="team_analyst_sim",
+      instruction="As a data analyst for a football team, I want to update the 'overall_rating' of player Toni Kroos (player_api_id=95078, player_fifa_api_id=182521) for the record with date '2015-08-20 00:00:00' in the Player_Attributes table to 89. After that, I want to know which matches in the season '2015/2016' have Toni Kroos set as a starting home player, listing their match_api_id and home_team_api_id. Please provide both actions in order.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player_Attributes SET overall_rating=89 WHERE player_api_id=95078 AND player_fifa_api_id=182521 AND date='2015-08-20 00:00:00';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT match_api_id, home_team_api_id FROM Match WHERE season='2015/2016' AND (home_player_1=95078 OR home_player_2=95078 OR home_player_3=95078 OR home_player_4=95078 OR home_player_5=95078 OR home_player_6=95078 OR home_player_7=95078 OR home_player_8=95078 OR home_player_9=95078 OR home_player_10=95078 OR home_player_11=95078);"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="data-analyst-20240612",
+      instruction="I am cleaning the Player database for consistency. Player 'Chaouki Ben Saada' appears twice with player_api_id 33100 and player_api_id 33116. I want to keep 33116 as the main record and remove 33100. Please update all references to player_api_id 33100 in the Match table (home_player_1-11, away_player_1-11, etc.) to player_api_id 33116, then delete the Player record where player_api_id=33100.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_1 = 33116 WHERE home_player_1 = 33100;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_2 = 33116 WHERE home_player_2 = 33100;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_3 = 33116 WHERE home_player_3 = 33100;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_4 = 33116 WHERE home_player_4 = 33100;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_5 = 33116 WHERE home_player_5 = 33100;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_6 = 33116 WHERE home_player_6 = 33100;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_7 = 33116 WHERE home_player_7 = 33100;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_8 = 33116 WHERE home_player_8 = 33100;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_9 = 33116 WHERE home_player_9 = 33100;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_10 = 33116 WHERE home_player_10 = 33100;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_11 = 33116 WHERE home_player_11 = 33100;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_1 = 33116 WHERE away_player_1 = 33100;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_2 = 33116 WHERE away_player_2 = 33100;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_3 = 33116 WHERE away_player_3 = 33100;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_4 = 33116 WHERE away_player_4 = 33100;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_5 = 33116 WHERE away_player_5 = 33100;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_6 = 33116 WHERE away_player_6 = 33100;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_7 = 33116 WHERE away_player_7 = 33100;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_8 = 33116 WHERE away_player_8 = 33100;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_9 = 33116 WHERE away_player_9 = 33100;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_10 = 33116 WHERE away_player_10 = 33100;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_11 = 33116 WHERE away_player_11 = 33100;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "DELETE FROM Player WHERE player_api_id = 33100;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="team_analyst_001",
+      instruction="I'm updating player records for Switzerland Super League. Please (1) update Vincent Ruefli's height to 184 and weight to 180 (player_name: 'Vincent Ruefli'), and (2) after that, give me all matches (match_api_id, date) in the Switzerland Super League (country_id = 24558) where Vincent Ruefli (player_api_id = 140495) played (either as a home or away player).",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height = 184, weight = 180 WHERE player_name = 'Vincent Ruefli';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT match_api_id, date FROM Match WHERE country_id = 24558 AND (home_player_1 = 140495 OR home_player_2 = 140495 OR home_player_3 = 140495 OR home_player_4 = 140495 OR home_player_5 = 140495 OR home_player_6 = 140495 OR home_player_7 = 140495 OR home_player_8 = 140495 OR home_player_9 = 140495 OR home_player_10 = 140495 OR home_player_11 = 140495 OR away_player_1 = 140495 OR away_player_2 = 140495 OR away_player_3 = 140495 OR away_player_4 = 140495 OR away_player_5 = 140495 OR away_player_6 = 140495 OR away_player_7 = 140495 OR away_player_8 = 140495 OR away_player_9 = 140495 OR away_player_10 = 140495 OR away_player_11 = 140495);"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="data_manager_1",
+      instruction="As the sports database manager, I need you to: 1) Update the height of player 'Marcelo Jose Oliveira' (player_api_id=71352) in the Player table to 188; and 2) For the match with match_api_id=2016029 from season '2015/2016', set away_player_3 to NULL in the Match table to remove him from that lineup.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height = 188 WHERE player_api_id = 71352;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_3 = NULL WHERE match_api_id = 2016029 AND season = '2015/2016';"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="data-fix-user",
+      instruction="You are updating football player records as a database administrator. You found out that the record for player Steven Fletcher (player_api_id 32627) is wrong: his birthday should be '1987-03-26 00:00:00', his height should be 186.0 (in cm), and his weight should be 170 (in lbs). Please update the Player table for Steven Fletcher (player_api_id 32627, player_name 'Steven Fletcher') to the new birthday '1987-03-26 00:00:00', height 186.0, and weight 170.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET birthday = '1987-03-26 00:00:00', height = 186.0, weight = 170 WHERE player_api_id = 32627 AND player_name = 'Steven Fletcher';"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="analyst-j.smith84",
+      instruction="You are analyst J. Smith, methodical and precise. You must update the height and weight of Glen Johnson (player_api_id: 34036) to 184.0 cm and 158 lbs, and Matt Ritchie (player_api_id: 155913) to 174.0 cm and 162 lbs, respectively, in the Player table. Afterwards, list all matches from the 2009/2010 season where Glen Johnson participated, either as a home or away player. Parameters: Glen Johnson player_api_id 34036, new height 184.0, new weight 158; Matt Ritchie player_api_id 155913, new height 174.0, new weight 162.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height=184.0, weight=158 WHERE player_api_id=34036;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height=174.0, weight=162 WHERE player_api_id=155913;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT match_api_id, season, date, home_team_api_id, away_team_api_id FROM Match WHERE season = '2009/2010' AND (home_player_1=34036 OR home_player_2=34036 OR home_player_3=34036 OR home_player_4=34036 OR home_player_5=34036 OR home_player_6=34036 OR home_player_7=34036 OR home_player_8=34036 OR home_player_9=34036 OR home_player_10=34036 OR home_player_11=34036 OR away_player_1=34036 OR away_player_2=34036 OR away_player_3=34036 OR away_player_4=34036 OR away_player_5=34036 OR away_player_6=34036 OR away_player_7=34036 OR away_player_8=34036 OR away_player_9=34036 OR away_player_10=34036 OR away_player_11=34036);"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="club_manager",
+      instruction="You are the manager of the team responsible for Aaron Appindangoye (player_api_id: 505942). You want to update his official height to 185 cm and weight to 190 kg in the Player table. Then, show a summary (match_api_id, date, home_team_goal, away_team_goal) of all matches where he was listed as the home team player_1 in the Match table.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height = 185, weight = 190 WHERE player_api_id = 505942;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT match_api_id, date, home_team_goal, away_team_goal FROM Match WHERE home_player_1 = 505942;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="expert_user_03",
+      instruction="I want to update Christian Fuchs (player_api_id=43061) because in his last played match, he received a yellow card and looked tired. Please update his weight to 192 in the Player table. Also, in the Player_Attributes table, for his latest attribute row (id=56789), reduce his potential to 72. (player_api_id=43061, new_weight=192, player_attributes_id=56789, new_potential=72).",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET weight = 192 WHERE player_api_id = 43061;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player_Attributes SET potential = 72 WHERE id = 56789 AND player_api_id = 43061;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="analyst_ivp",
+      instruction="I am a football data analyst. I need to update Ivan Pillud's latest physical information according to recent official measurement: his height should be 178 (was 177.8) and weight 165 (was 163). Ivan Pillud has player_api_id 164033. After updating, please show me the three most recent matches Ivan played, including date, home_team_api_id, away_team_api_id, and final scores.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height = 178, weight = 165 WHERE player_api_id = 164033;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT date, home_team_api_id, away_team_api_id, home_team_goal, away_team_goal FROM Match WHERE (home_player_1=164033 OR home_player_2=164033 OR home_player_3=164033 OR home_player_4=164033 OR home_player_5=164033 OR home_player_6=164033 OR home_player_7=164033 OR home_player_8=164033 OR home_player_9=164033 OR home_player_10=164033 OR home_player_11=164033 OR away_player_1=164033 OR away_player_2=164033 OR away_player_3=164033 OR away_player_4=164033 OR away_player_5=164033 OR away_player_6=164033 OR away_player_7=164033 OR away_player_8=164033 OR away_player_9=164033 OR away_player_10=164033 OR away_player_11=164033) ORDER BY date DESC LIMIT 3;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="admin",
+      instruction="I am the football database admin. I found that Jakub Tosik (player_api_id 68762) has an incorrect birthday in our system. Please update his birthday to '1987-05-25 00:00:00'. After that, show me the match_api_id and date of every Match where Jakub Tosik (player_api_id 68762) played, whether as home_player_1-11 or away_player_1-11.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET birthday = '1987-05-25 00:00:00' WHERE player_api_id = 68762;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT match_api_id, date FROM Match WHERE home_player_1 = 68762 OR home_player_2 = 68762 OR home_player_3 = 68762 OR home_player_4 = 68762 OR home_player_5 = 68762 OR home_player_6 = 68762 OR home_player_7 = 68762 OR home_player_8 = 68762 OR home_player_9 = 68762 OR home_player_10 = 68762 OR home_player_11 = 68762 OR away_player_1 = 68762 OR away_player_2 = 68762 OR away_player_3 = 68762 OR away_player_4 = 68762 OR away_player_5 = 68762 OR away_player_6 = 68762 OR away_player_7 = 68762 OR away_player_8 = 68762 OR away_player_9 = 68762 OR away_player_10 = 68762 OR away_player_11 = 68762;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="evelyn.berger2142@example.com",
+      instruction="My name is Evelyn Berger, and my email is evelyn.berger2142@example.com. As a sports analyst, I want to update the player Adam Szalai's (player_api_id: 36774) height to 194.5 cm and weight to 205 lbs, but ONLY if Adam Szalai played in the match with match_api_id 1732774. If he did, please proceed with updating his height and weight in the Player table.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT 1 FROM Match WHERE match_api_id = 1732774 AND (home_player_1 = 36774 OR home_player_2 = 36774 OR home_player_3 = 36774 OR home_player_4 = 36774 OR home_player_5 = 36774 OR home_player_6 = 36774 OR home_player_7 = 36774 OR home_player_8 = 36774 OR home_player_9 = 36774 OR home_player_10 = 36774 OR home_player_11 = 36774 OR away_player_1 = 36774 OR away_player_2 = 36774 OR away_player_3 = 36774 OR away_player_4 = 36774 OR away_player_5 = 36774 OR away_player_6 = 36774 OR away_player_7 = 36774 OR away_player_8 = 36774 OR away_player_9 = 36774 OR away_player_10 = 36774 OR away_player_11 = 36774);"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height = 194.5, weight = 205 WHERE player_api_id = 36774;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="club_data_admin",
+      instruction="You are a club data administrator and noticed that the height listed for player 'Thomas Mueller' (player_api_id: 116772, player_fifa_api_id: 189596, birthday: '1989-09-13 00:00:00') in the Player table is incorrect. The current value is 185.42, but it should be 186.00 cm. Please update the Player table so that Thomas Mueller's height is set to 186.00. Once completed, fetch a list of all match_api_id and date from the Match table where Thomas Mueller (player_api_id: 116772) appeared as either home_player_8, away_player_8, home_player_10, or away_player_10, so I can confirm the change.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height = 186.00 WHERE player_api_id = 116772;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT match_api_id, date FROM Match WHERE home_player_8 = 116772 OR away_player_8 = 116772 OR home_player_10 = 116772 OR away_player_10 = 116772;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="data_manager_01",
+      instruction="You are managing the database of player records. Please update the following player details: for player 'Peter Jehle' (player_api_id=33272), change height to 190; for player 'Michel Renggli' (player_api_id=25839), change weight to 170.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height = 190 WHERE player_api_id = 33272;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET weight = 170 WHERE player_api_id = 25839;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="team_manager_2024",
+      instruction="Update the height and weight for the player named 'Kevin de Bruyne' in the Player table: set height to 181.5 and weight to 170. Then show me the updated profile for confirmation.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height = 181.5, weight = 170 WHERE player_name = 'Kevin de Bruyne';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT player_api_id, player_name, player_fifa_api_id, birthday, height, weight FROM Player WHERE player_name = 'Kevin de Bruyne';"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="julia.vermeer81@example.com",
+      instruction="My name is Julia Vermeer and my email is julia.vermeer81@example.com. I am a sports data analyst and need to update the historical database for my research. Please (1) update the 'weight' for the player 'Sigourney Bandjar' whose player_api_id is 37171 to 175 instead of 172, and (2) correct the match record for match_api_id 1028696 by setting away_player_2 to 37171. Please apply both changes exactly as specified.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT * FROM Player WHERE player_api_id = 37171 AND player_name = 'Sigourney Bandjar';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET weight = 175 WHERE player_api_id = 37171;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_2 = 37171 WHERE match_api_id = 1028696;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="lucas.sportsanalyst@example.com",
+      instruction="I am Lucas, reviewing player data integrity. I've found a historical mistake: the player with player_api_id 140932, currently listed as 'Milos Kosanovic', has the wrong birthday. Please update his birthday in the Player table to '1990-06-15 00:00:00'. After updating, show me all of his details (including name, fifa_api_id, height, weight, birthday) so I can verify the update myself. Make sure the results are from Player where player_api_id = 140932.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET birthday = '1990-06-15 00:00:00' WHERE player_api_id = 140932;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT player_name, player_fifa_api_id, height, weight, birthday FROM Player WHERE player_api_id = 140932;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="manager_09",
+      instruction="As the manager of Luis Silva (player_api_id 476945), after observing his performance in match 1748756, I want to update his weight to 170. Additionally, I want to insert a new player attribute row for Luis Silva (player_fifa_api_id 219468, player_api_id 476945) on date '2014-09-21 00:00:00', with the following: overall_rating 72, potential 75, preferred_foot 'Right', attacking_work_rate 'Medium', defensive_work_rate 'High', crossing 60, finishing 55, heading_accuracy 50, short_passing 65, volleys 48, dribbling 66, curve 45, free_kick_accuracy 40, long_passing 62, ball_control 67, acceleration 68, sprint_speed 73, agility 65, reactions 70, balance 62, shot_power 60, jumping 65, stamina 71, strength 67, long_shots 53, aggression 62, interceptions 54, positioning 56, vision 60, penalties 41, marking 60, standing_tackle 65, sliding_tackle 61, gk_diving 18, gk_handling 15, gk_kicking 13, gk_positioning 17, gk_reflexes 21.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET weight = 170 WHERE player_api_id = 476945;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "INSERT INTO Player_Attributes (player_fifa_api_id, player_api_id, date, overall_rating, potential, preferred_foot, attacking_work_rate, defensive_work_rate, crossing, finishing, heading_accuracy, short_passing, volleys, dribbling, curve, free_kick_accuracy, long_passing, ball_control, acceleration, sprint_speed, agility, reactions, balance, shot_power, jumping, stamina, strength, long_shots, aggression, interceptions, positioning, vision, penalties, marking, standing_tackle, sliding_tackle, gk_diving, gk_handling, gk_kicking, gk_positioning, gk_reflexes) VALUES (219468, 476945, '2014-09-21 00:00:00', 72, 75, 'Right', 'Medium', 'High', 60, 55, 50, 65, 48, 66, 45, 40, 62, 67, 68, 73, 65, 70, 62, 60, 65, 71, 67, 53, 62, 54, 56, 60, 41, 60, 65, 61, 18, 15, 13, 17, 21);"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="185918",
+      instruction="I am reviewing player data for Siaka Bamba (player_api_id 185918, player_name 'Siaka Bamba'), and I see his height is listed as 175.26 cm. After checking the latest match records, I want to correct his height to 178 cm. Please update the Player table where player_api_id is 185918 and set height to 178.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT * FROM Player WHERE player_api_id = 185918 AND player_name = 'Siaka Bamba';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height = 178 WHERE player_api_id = 185918;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="player_23335",
+      instruction="You are Jackie McNamara, player_api_id 23335, player_fifa_api_id 4173, birthday 1973-10-24. Due to a recent health check, you want to update your profile: set height to 178 and weight to 145. Please process this update.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT * FROM Player WHERE player_api_id=23335 AND player_fifa_api_id=4173 AND birthday='1973-10-24 00:00:00';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height=178, weight=145 WHERE player_api_id=23335;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="staff_004",
+      instruction="I am club physiotherapist. Please update Thomas Scobbie's weight to 157 pounds in the Player table, since our latest test shows an increase. Also, after video analysis of match 1991038 (where he played for the away team), please update the home_team_goal to 1 in that Match record to correct a previous recording error.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET weight = 157 WHERE player_name = 'Thomas Scobbie';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_team_goal = 1 WHERE match_api_id = 1991038;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="analyst-france-ligue1",
+      instruction="You are an analyst for France Ligue 1. You've noticed the birthdate for player Lucas Deaux is incorrect in the Player table (player_api_id = 46755, player_fifa_api_id = 178051); it should be '1988-12-26 00:00:00'. Please update it. Additionally, in the Match table, for all France Ligue 1 matches (league_id = 4769) where Lucas Deaux was home_player_6 (home_player_6 = 46755), update the home_player_Y6 field to 7.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET birthday = '1988-12-26 00:00:00' WHERE player_api_id = 46755 AND player_fifa_api_id = 178051;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_Y6 = 7 WHERE league_id = 4769 AND home_player_6 = 46755;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="analyst_001",
+      instruction="You are an analyst tracking disciplinary issues for defenders in Netherlands Eredivisie. For player Mitchell Dijks (player_api_id: 352366, player_fifa_api_id: 208459), you wish to add a new row to the Player_Attributes table for the 2014/2015 season match on '2014-12-06' (match_api_id: 1712524) to reflect a yellow card received. Set: overall_rating=68, aggression=75, interceptions=60. The player_fifa_api_id is 208459 and the date is '2014-12-06'.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT * FROM Player WHERE player_api_id=352366;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "INSERT INTO Player_Attributes (player_fifa_api_id, player_api_id, date, overall_rating, aggression, interceptions) VALUES (208459, 352366, '2014-12-06', 68, 75, 60);"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="southampton-coordinator",
+      instruction="Hi, I'm the Southampton data coordinator. I've just received new medical stats for two of our players and need to update them ASAP. For player_api_id 157838 (Nathaniel Clyne), update height to 177 and weight to 150; preferred_foot 'Right'. For player_api_id 46010 (Ryan Bertrand), update height to 178 and weight to 189; preferred_foot 'Left'. Update both Player and Player_Attributes tables accordingly.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height=177, weight=150 WHERE player_api_id=157838;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player_Attributes SET preferred_foot='Right' WHERE player_api_id=157838;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height=178, weight=189 WHERE player_api_id=46010;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player_Attributes SET preferred_foot='Left' WHERE player_api_id=46010;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="41226",
+      instruction="My name is Jane Harper. I am verifying defensive assignments. Please confirm that player Steven Thicot (player_api_id: 41226, player_fifa_api_id: 177478, birthday: 1987-02-14, height: 185.42, weight: 179) is correctly recorded. Then, for the match with match_api_id 2015953 (Portugal Liga ZON Sagres, stage 17, season 2015/2016, 2016-01-10), update the away_player_4 field to player_api_id 209442 (Tinoco). Afterwards, show me all the updated away player_api_ids for that match to verify.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT * FROM Player WHERE player_api_id=41226 AND player_fifa_api_id=177478 AND birthday='1987-02-14 00:00:00' AND height=185.42 AND weight=179;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_4=209442 WHERE match_api_id=2015953;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT away_player_1, away_player_2, away_player_3, away_player_4, away_player_5, away_player_6, away_player_7, away_player_8, away_player_9, away_player_10, away_player_11 FROM Match WHERE match_api_id=2015953;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="admin",
+      instruction="I'm the club administrator. I need to update the height of player Jamie Hamill, whose player_api_id is 32711, to 179 in the Player table, as his current value is incorrect. Also, please provide a list of all matches where Jamie Hamill (player_api_id=32711) was listed as the 7th player in either the home or away lineup. For those matches, give the match_api_id, date, home_team_api_id, and away_team_api_id.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height=179 WHERE player_api_id=32711;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT match_api_id, date, home_team_api_id, away_team_api_id FROM Match WHERE home_player_7=32711 OR away_player_7=32711;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="team_manager_italy",
+      instruction="You are managing the registration data for player 'Simone Scuffet' (player_api_id 423223, player_fifa_api_id 220048). Please update his birthday to '1996-01-31' and his height to 191. After correcting this, show me all matches from the '2013/2014' season where Simone Scuffet (player_api_id 423223) appeared, regardless of whether his team played home or away.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET birthday = '1996-01-31', height = 191 WHERE player_api_id = 423223;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT match_api_id, season, date, home_team_api_id, away_team_api_id, home_team_goal, away_team_goal FROM Match WHERE season = '2013/2014' AND (home_player_1 = 423223 OR home_player_2 = 423223 OR home_player_3 = 423223 OR home_player_4 = 423223 OR home_player_5 = 423223 OR home_player_6 = 423223 OR home_player_7 = 423223 OR home_player_8 = 423223 OR home_player_9 = 423223 OR home_player_10 = 423223 OR home_player_11 = 423223 OR away_player_1 = 423223 OR away_player_2 = 423223 OR away_player_3 = 423223 OR away_player_4 = 423223 OR away_player_5 = 423223 OR away_player_6 = 423223 OR away_player_7 = 423223 OR away_player_8 = 423223 OR away_player_9 = 423223 OR away_player_10 = 423223 OR away_player_11 = 423223);"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="player_api_id:39573, player_name:'Olivier Renard', player_fifa_api_id:184412, birthday:'1979-02-01 00:00:00', height:187.96, weight:170",
+      instruction="My name is Olivier Renard (player_api_id 39573, fifa id 184412, born 1979-02-01, height 187.96, weight 170). For data cleanup, please swap me (player_api_id 39573) with Wouter Biebauw (player_api_id 38327) in the home_gk and away_gk positions of the following two matches: in match_api_id 1032698, set home_player_1 to 38327 instead of 39573; in match_api_id 1717887, set home_player_1 to 39573 instead of 38327. After making these swaps, show me the updated home and away goalkeeper names for both matches from the match_view.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_1 = 38327 WHERE match_api_id = 1032698 AND home_player_1 = 39573;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_1 = 39573 WHERE match_api_id = 1717887 AND home_player_1 = 38327;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT match_api_id, home_gk, away_gk FROM match_view WHERE match_api_id IN (1032698, 1717887);"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="admin_ops_01",
+      instruction="My name is Yara Martinez (admin_ops_01), a meticulous football data admin. I need to update Mikel Arruabarrena's (player_api_id=75616) records: set his birthday to '1984-02-09 00:00:00' and his weight to 180 for accuracy. Please modify both fields for this player.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET birthday = '1984-02-09 00:00:00' WHERE player_api_id = 75616"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET weight = 180 WHERE player_api_id = 75616"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="32870",
+      instruction="My name is Alan Hutton, player_api_id 32870 (player_fifa_api_id 139533), birthday 1984-11-30. Please update my height to 186 and my weight to 162 in the Player table. Also, wherever 'away_player_2' in the Match table is 38759 (should be me), update it to 32870.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height=186, weight=162 WHERE player_api_id=32870 AND player_fifa_api_id=139533 AND birthday='1984-11-30';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_2=32870 WHERE away_player_2=38759;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="564854",
+      instruction="I am managing the data for Jean Chopin, with player_api_id 564854 and player_fifa_api_id 223669. Please remove all my information from the Player table. Also, for all matches in the Match table, if my player_api_id 564854 appears in any of home_player_1 through home_player_11 or away_player_1 through away_player_11 columns, set those columns to NULL. Ensure all deletions and updates are carried out for player_api_id 564854 and player_fifa_api_id 223669.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_1 = NULL WHERE home_player_1 = 564854"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_2 = NULL WHERE home_player_2 = 564854"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_3 = NULL WHERE home_player_3 = 564854"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_4 = NULL WHERE home_player_4 = 564854"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_5 = NULL WHERE home_player_5 = 564854"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_6 = NULL WHERE home_player_6 = 564854"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_7 = NULL WHERE home_player_7 = 564854"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_8 = NULL WHERE home_player_8 = 564854"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_9 = NULL WHERE home_player_9 = 564854"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_10 = NULL WHERE home_player_10 = 564854"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_11 = NULL WHERE home_player_11 = 564854"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_1 = NULL WHERE away_player_1 = 564854"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_2 = NULL WHERE away_player_2 = 564854"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_3 = NULL WHERE away_player_3 = 564854"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_4 = NULL WHERE away_player_4 = 564854"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_5 = NULL WHERE away_player_5 = 564854"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_6 = NULL WHERE away_player_6 = 564854"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_7 = NULL WHERE away_player_7 = 564854"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_8 = NULL WHERE away_player_8 = 564854"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_9 = NULL WHERE away_player_9 = 564854"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_10 = NULL WHERE away_player_10 = 564854"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_11 = NULL WHERE away_player_11 = 564854"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "DELETE FROM Player WHERE player_api_id = 564854 AND player_fifa_api_id = 223669"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="303359",
+      instruction="You're the football data admin who noticed that for match_api_id 1990045, the home lineup incorrectly lists player_api_id 303359 (Amos Youga) as home_player_8, but it should actually be player_api_id 466143 (Mohamed Larbi). Please update home_player_8 for this match to 466143, and afterwards, verify that the correction is reflected in the database.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT * FROM Player WHERE player_api_id = 303359;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_8 = 466143 WHERE match_api_id = 1990045 AND home_player_8 = 303359;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT home_player_8 FROM Match WHERE match_api_id = 1990045;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="admin_001",
+      instruction="You want to update the birthday of player 'Grzegorz Kuswik' whose player_api_id is 115724 to '1987-05-24 00:00:00'.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET birthday = '1987-05-24 00:00:00' WHERE player_api_id = 115724;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="manager_request",
+      instruction="I am the club manager. For the 2013/2014 season, I want every match where player with player_api_id = 40695 (Ryan Shawcross) is listed as a home or away player to instead feature player_api_id = 38899 (Robert Huth) in his place. The season is '2013/2014', old_player_api_id is 40695, and new_player_api_id is 38899. Please update all such matches for every position Ryan Shawcross appears in to now list Robert Huth (player_api_id = 38899). Confirm the updates have completed.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_1 = 38899 WHERE season = '2013/2014' AND home_player_1 = 40695;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_2 = 38899 WHERE season = '2013/2014' AND home_player_2 = 40695;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_3 = 38899 WHERE season = '2013/2014' AND home_player_3 = 40695;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_4 = 38899 WHERE season = '2013/2014' AND home_player_4 = 40695;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_5 = 38899 WHERE season = '2013/2014' AND home_player_5 = 40695;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_6 = 38899 WHERE season = '2013/2014' AND home_player_6 = 40695;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_7 = 38899 WHERE season = '2013/2014' AND home_player_7 = 40695;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_8 = 38899 WHERE season = '2013/2014' AND home_player_8 = 40695;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_9 = 38899 WHERE season = '2013/2014' AND home_player_9 = 40695;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_10 = 38899 WHERE season = '2013/2014' AND home_player_10 = 40695;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_11 = 38899 WHERE season = '2013/2014' AND home_player_11 = 40695;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_1 = 38899 WHERE season = '2013/2014' AND away_player_1 = 40695;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_2 = 38899 WHERE season = '2013/2014' AND away_player_2 = 40695;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_3 = 38899 WHERE season = '2013/2014' AND away_player_3 = 40695;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_4 = 38899 WHERE season = '2013/2014' AND away_player_4 = 40695;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_5 = 38899 WHERE season = '2013/2014' AND away_player_5 = 40695;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_6 = 38899 WHERE season = '2013/2014' AND away_player_6 = 40695;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_7 = 38899 WHERE season = '2013/2014' AND away_player_7 = 40695;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_8 = 38899 WHERE season = '2013/2014' AND away_player_8 = 40695;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_9 = 38899 WHERE season = '2013/2014' AND away_player_9 = 40695;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_10 = 38899 WHERE season = '2013/2014' AND away_player_10 = 40695;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_11 = 38899 WHERE season = '2013/2014' AND away_player_11 = 40695;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="player_update_001",
+      instruction="I'm Aisha Dubois, stats specialist. Please update player 'Frank Boeckx' (player_api_id: 37854) with a new birthdate of '1986-10-01 00:00:00' and new weight of 191. After this, show me all matches in the match_view where 'Frank Boeckx' played as home_gk. Confirm both the update and the list of such matches.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET birthday = '1986-10-01 00:00:00', weight = 191 WHERE player_api_id = 37854;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT * FROM match_view WHERE home_gk = 'Frank Boeckx';"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="club_manager_paiva_9809",
+      instruction="I'm Mr. Paiva, club manager for the team with team_api_id 9809. We recently updated our player registration and Paulao's record changed from player_api_id 45237 to 111111. Please update every match record where my team (team_api_id: 9809) fielded Paulao (old player_api_id: 45237), so that any 'home_player_N' or 'away_player_N' fields in the Match table that previously referenced 45237 now reference the new player_api_id 111111. Use team_api_id: 9809, old_player_api_id: 45237, new_player_api_id: 111111.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_1 = 111111 WHERE home_team_api_id = 9809 AND home_player_1 = 45237;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_2 = 111111 WHERE home_team_api_id = 9809 AND home_player_2 = 45237;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_3 = 111111 WHERE home_team_api_id = 9809 AND home_player_3 = 45237;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_4 = 111111 WHERE home_team_api_id = 9809 AND home_player_4 = 45237;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_5 = 111111 WHERE home_team_api_id = 9809 AND home_player_5 = 45237;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_6 = 111111 WHERE home_team_api_id = 9809 AND home_player_6 = 45237;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_7 = 111111 WHERE home_team_api_id = 9809 AND home_player_7 = 45237;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_8 = 111111 WHERE home_team_api_id = 9809 AND home_player_8 = 45237;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_9 = 111111 WHERE home_team_api_id = 9809 AND home_player_9 = 45237;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_10 = 111111 WHERE home_team_api_id = 9809 AND home_player_10 = 45237;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_11 = 111111 WHERE home_team_api_id = 9809 AND home_player_11 = 45237;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_1 = 111111 WHERE away_team_api_id = 9809 AND away_player_1 = 45237;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_2 = 111111 WHERE away_team_api_id = 9809 AND away_player_2 = 45237;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_3 = 111111 WHERE away_team_api_id = 9809 AND away_player_3 = 45237;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_4 = 111111 WHERE away_team_api_id = 9809 AND away_player_4 = 45237;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_5 = 111111 WHERE away_team_api_id = 9809 AND away_player_5 = 45237;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_6 = 111111 WHERE away_team_api_id = 9809 AND away_player_6 = 45237;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_7 = 111111 WHERE away_team_api_id = 9809 AND away_player_7 = 45237;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_8 = 111111 WHERE away_team_api_id = 9809 AND away_player_8 = 45237;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_9 = 111111 WHERE away_team_api_id = 9809 AND away_player_9 = 45237;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_10 = 111111 WHERE away_team_api_id = 9809 AND away_player_10 = 45237;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_11 = 111111 WHERE away_team_api_id = 9809 AND away_player_11 = 45237;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="analyst_football_data",
+      instruction="As a football data analyst, I need to (1) update the weight of the player Jean Chopin (player_api_id=564854) to 203 in the Player table, and (2) for every match in the Match table from the season '2015/2016' where Jean Chopin (player_api_id=564854) was the home goalkeeper (home_player_1=564854), increment the home_team_goal by 1 to correct previous data entry errors.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET weight = 203 WHERE player_api_id = 564854;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_team_goal = home_team_goal + 1 WHERE season = '2015/2016' AND home_player_1 = 564854;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="example_user_id",
+      instruction="You are Sonja Vollmer, methodical and diligent. Your email is sonja.vollmer88@example.com. Please update the birthday of player 'Moritz Stoppelkamp' (player_api_id 26928) to '1986-11-30 00:00:00'. Then, for all matches in season '2014/2015', remove this player from any Match appearance: wherever '26928' appears in any home_player_# or away_player_# fields, set those columns to NULL in those Match rows.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET birthday = '1986-11-30 00:00:00' WHERE player_api_id = 26928;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_1 = NULL WHERE season = '2014/2015' AND home_player_1 = 26928;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_2 = NULL WHERE season = '2014/2015' AND home_player_2 = 26928;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_3 = NULL WHERE season = '2014/2015' AND home_player_3 = 26928;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_4 = NULL WHERE season = '2014/2015' AND home_player_4 = 26928;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_5 = NULL WHERE season = '2014/2015' AND home_player_5 = 26928;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_6 = NULL WHERE season = '2014/2015' AND home_player_6 = 26928;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_7 = NULL WHERE season = '2014/2015' AND home_player_7 = 26928;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_8 = NULL WHERE season = '2014/2015' AND home_player_8 = 26928;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_9 = NULL WHERE season = '2014/2015' AND home_player_9 = 26928;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_10 = NULL WHERE season = '2014/2015' AND home_player_10 = 26928;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_11 = NULL WHERE season = '2014/2015' AND home_player_11 = 26928;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_1 = NULL WHERE season = '2014/2015' AND away_player_1 = 26928;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_2 = NULL WHERE season = '2014/2015' AND away_player_2 = 26928;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_3 = NULL WHERE season = '2014/2015' AND away_player_3 = 26928;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_4 = NULL WHERE season = '2014/2015' AND away_player_4 = 26928;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_5 = NULL WHERE season = '2014/2015' AND away_player_5 = 26928;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_6 = NULL WHERE season = '2014/2015' AND away_player_6 = 26928;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_7 = NULL WHERE season = '2014/2015' AND away_player_7 = 26928;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_8 = NULL WHERE season = '2014/2015' AND away_player_8 = 26928;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_9 = NULL WHERE season = '2014/2015' AND away_player_9 = 26928;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_10 = NULL WHERE season = '2014/2015' AND away_player_10 = 26928;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_11 = NULL WHERE season = '2014/2015' AND away_player_11 = 26928;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="coach",
+      instruction="I am the club's head coach, updating players' physical records as per new medicals. Please set Funso Ojo (player_api_id=171786) to height 179 and weight 160, Gaston Pereiro (player_api_id=441883) to height 190 and weight 170, and Andres Guardado (player_api_id=31045) to height 172 and weight 150. Confirm when updates are complete.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height=179, weight=160 WHERE player_api_id=171786;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height=190, weight=170 WHERE player_api_id=441883;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height=172, weight=150 WHERE player_api_id=31045;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="sports_analyst",
+      instruction="Update Benjamin Delacourt (player_api_id: 39871) birthday to '1986-09-10 00:00:00', confirm the updated details (player_name, birthday, height, weight), and list all unique (season, stage) where he played as home or away player in any match.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET birthday = '1986-09-10 00:00:00' WHERE player_api_id = 39871;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT player_name, birthday, height, weight FROM Player WHERE player_api_id = 39871;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT DISTINCT season, stage FROM Match WHERE 39871 IN (home_player_1, home_player_2, home_player_3, home_player_4, home_player_5, home_player_6, home_player_7, home_player_8, home_player_9, home_player_10, home_player_11, away_player_1, away_player_2, away_player_3, away_player_4, away_player_5, away_player_6, away_player_7, away_player_8, away_player_9, away_player_10, away_player_11);"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="club_manager",
+      instruction="You are the club manager and want to retire player 'Ifet Taljevic,23' (player_api_id: 5362) from match participation as home_player_7, and assign 'Sandro Lauper' (player_api_id: 659742) as home_player_7 for all home matches in seasons 2014/2015 and later, where the old player was home_player_7. Apply these changes only to affected Match rows (season >= '2014/2015', home_player_7 = 5362).",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_7 = 659742 WHERE home_player_7 = 5362 AND season >= '2014/2015';"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="user_cautiousanalyst_9832",
+      instruction="My name is Kevin Ortega. I am reviewing my player record for 'Cristiano Piccini' (player_api_id: 239964). Please update his birthday to '1992-10-01 00:00:00', set his height to 185 (in centimeters), and weight to 175 (in pounds). Additionally, for the match with match_api_id 1536875, Cristiano Piccini was incorrectly listed as 'away_player_2' (should be player_api_id: 239964) – please replace him with 'Federico Ceccherini' (player_api_id: 244816) in that away_player_2 field. Ensure all these updates are performed as specified.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET birthday = '1992-10-01 00:00:00', height = 185, weight = 175 WHERE player_api_id = 239964;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_2 = 244816 WHERE match_api_id = 1536875;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="janine.jacobs@example.com",
+      instruction="I am Janine Jacobs and need to correct the match record for match_api_id=1712399. Martin Hansen (player_api_id=47532) was incorrectly listed as the away team's starting goalkeeper, but he was replaced before kickoff by Gino Coutinho (player_api_id=37206) due to injury. Please: 1) authenticate Martin Hansen's player_api_id=47532, 2) update away_player_1 to 37206 in Match where match_api_id=1712399, 3) create the corrections table if it does not exist (CREATE TABLE corrections (id INTEGER PRIMARY KEY, match_api_id INTEGER, field_corrected TEXT, old_value INTEGER, new_value INTEGER, correction_note TEXT)), 4) insert into corrections a record with match_api_id=1712399, field_corrected='away_player_1', old_value=47532, new_value=37206, correction_note='Corrected away_team starting goalkeeper due to pre-match injury substitution for Martin Hansen.'",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT * FROM Player WHERE player_api_id=47532"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_1=37206 WHERE match_api_id=1712399"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "CREATE TABLE IF NOT EXISTS corrections (id INTEGER PRIMARY KEY, match_api_id INTEGER, field_corrected TEXT, old_value INTEGER, new_value INTEGER, correction_note TEXT)"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "INSERT INTO corrections (match_api_id, field_corrected, old_value, new_value, correction_note) VALUES (1712399, 'away_player_1', 47532, 37206, 'Corrected away_team starting goalkeeper due to pre-match injury substitution for Martin Hansen.')"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="203666",
+      instruction="I am the player Hans Vanaken (player_name: 'Hans Vanaken', birthday: '1992-08-24 00:00:00'). First, please tell me for team_api_id 203666, how many official matches in all recorded seasons have I played in, either as home or away player (my player_api_id is 203666)? Next, update my height to 195.00 and weight to 180. After that, show all matches in the 2015/2016 season where I appeared for team_api_id 203666 as home or away. Make sure the updates apply to my player profile for all future reference.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT COUNT(*) FROM Match WHERE (home_player_1=203666 OR home_player_2=203666 OR home_player_3=203666 OR home_player_4=203666 OR home_player_5=203666 OR home_player_6=203666 OR home_player_7=203666 OR home_player_8=203666 OR home_player_9=203666 OR home_player_10=203666 OR home_player_11=203666 OR away_player_1=203666 OR away_player_2=203666 OR away_player_3=203666 OR away_player_4=203666 OR away_player_5=203666 OR away_player_6=203666 OR away_player_7=203666 OR away_player_8=203666 OR away_player_9=203666 OR away_player_10=203666 OR away_player_11=203666) AND (home_team_api_id=203666 OR away_team_api_id=203666);"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height=195.00, weight=180 WHERE player_api_id=203666 AND player_name='Hans Vanaken' AND birthday='1992-08-24 00:00:00';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT * FROM Match WHERE season='2015/2016' AND (home_team_api_id=203666 OR away_team_api_id=203666) AND (home_player_1=203666 OR home_player_2=203666 OR home_player_3=203666 OR home_player_4=203666 OR home_player_5=203666 OR home_player_6=203666 OR home_player_7=203666 OR home_player_8=203666 OR home_player_9=203666 OR home_player_10=203666 OR home_player_11=203666 OR away_player_1=203666 OR away_player_2=203666 OR away_player_3=203666 OR away_player_4=203666 OR away_player_5=203666 OR away_player_6=203666 OR away_player_7=203666 OR away_player_8=203666 OR away_player_9=203666 OR away_player_10=203666 OR away_player_11=203666);"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="analyst_001",
+      instruction="I am a sports analyst. Please remove all match records for the season '2011/2012' where player 'Javier Calleja' (player_api_id: 38479) appeared in the starting lineup for either home or away teams. The season is exactly '2011/2012' and the player_api_id to search is 38479. Remove those matches from the Match table.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT id FROM Match WHERE season = '2011/2012' AND (home_player_1 = 38479 OR home_player_2 = 38479 OR home_player_3 = 38479 OR home_player_4 = 38479 OR home_player_5 = 38479 OR home_player_6 = 38479 OR home_player_7 = 38479 OR home_player_8 = 38479 OR home_player_9 = 38479 OR home_player_10 = 38479 OR home_player_11 = 38479 OR away_player_1 = 38479 OR away_player_2 = 38479 OR away_player_3 = 38479 OR away_player_4 = 38479 OR away_player_5 = 38479 OR away_player_6 = 38479 OR away_player_7 = 38479 OR away_player_8 = 38479 OR away_player_9 = 38479 OR away_player_10 = 38479 OR away_player_11 = 38479);"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "DELETE FROM Match WHERE season = '2011/2012' AND (home_player_1 = 38479 OR home_player_2 = 38479 OR home_player_3 = 38479 OR home_player_4 = 38479 OR home_player_5 = 38479 OR home_player_6 = 38479 OR home_player_7 = 38479 OR home_player_8 = 38479 OR home_player_9 = 38479 OR home_player_10 = 38479 OR home_player_11 = 38479 OR away_player_1 = 38479 OR away_player_2 = 38479 OR away_player_3 = 38479 OR away_player_4 = 38479 OR away_player_5 = 38479 OR away_player_6 = 38479 OR away_player_7 = 38479 OR away_player_8 = 38479 OR away_player_9 = 38479 OR away_player_10 = 38479 OR away_player_11 = 38479);"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="team_data_analyst",
+      instruction="I am a team data analyst. I need to correct the official record for the player Ibrahima Sory Camara, whose player_api_id is 40677. Update his height from 170.18 to 172 and his weight from 152 to 155.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT * FROM Player WHERE player_api_id = 40677 AND player_name = 'Ibrahima Sory Camara';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height = 172, weight = 155 WHERE player_api_id = 40677;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="team_manager_001",
+      instruction="As the manager of the team with home_team_api_id 8721, I need to replace our currently scheduled home midfielder, Max Kruse (player_api_id 58346), who is listed as home_player_6 in the match with match_api_id 674406 for the season '2009/2010', due to his injury. Please substitute him with Yoshito Okubo (player_api_id 38372) in the same home_player_6 slot for that match. Confirm that this update is applied.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_6 = 38372 WHERE match_api_id = 674406 AND home_player_6 = 58346;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="Dr. Celeste Duval",
+      instruction="You are Dr. Celeste Duval, the team physician. After a new medical evaluation, you have determined that player Bakary Soumare (player_api_id: 69509) should have his height updated to 195 cm and his weight to 208 lbs in the club database for compliance with medical records. Please update this information.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height=195, weight=208 WHERE player_api_id=69509 AND player_name='Bakary Soumare';"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="manager_for_zaha",
+      instruction="As the manager for Wilfried Zaha (player_api_id: 198510), update his weight in the Player table to 148. Then, list all matches where Wilfried Zaha played as an away player (i.e., player_api_id 198510 appears in any away_player_N field) and the away team lost (away_team_goal < home_team_goal), returning match_api_id and season for those matches.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET weight = 148 WHERE player_api_id = 198510;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT match_api_id, season FROM Match WHERE (away_player_1 = 198510 OR away_player_2 = 198510 OR away_player_3 = 198510 OR away_player_4 = 198510 OR away_player_5 = 198510 OR away_player_6 = 198510 OR away_player_7 = 198510 OR away_player_8 = 198510 OR away_player_9 = 198510 OR away_player_10 = 198510 OR away_player_11 = 198510) AND away_team_goal < home_team_goal;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="player_api_id:13383",
+      instruction="You are Andrzej, a thorough and systematic data analyst correcting historic football records. For player Maciej Korzym (player_api_id 13383), change his birthday to '1988-04-15 00:00:00' and weight to 168 in the Player table. Then, for all matches from season '2008/2009', replace every occurrence of his player_api_id 13383 with Maciej Malkowski,24's player_api_id 95533 in all home_player_X, away_player_X, home_player_Y, away_player_Y, home_player_N, and away_player_N columns in the Match table where applicable. Please proceed with these specific updates.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET birthday='1988-04-15 00:00:00', weight=168 WHERE player_api_id=13383"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_1=95533 WHERE home_player_1=13383 AND season='2008/2009'"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_2=95533 WHERE home_player_2=13383 AND season='2008/2009'"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_3=95533 WHERE home_player_3=13383 AND season='2008/2009'"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_4=95533 WHERE home_player_4=13383 AND season='2008/2009'"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_5=95533 WHERE home_player_5=13383 AND season='2008/2009'"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_6=95533 WHERE home_player_6=13383 AND season='2008/2009'"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_7=95533 WHERE home_player_7=13383 AND season='2008/2009'"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_8=95533 WHERE home_player_8=13383 AND season='2008/2009'"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_9=95533 WHERE home_player_9=13383 AND season='2008/2009'"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_10=95533 WHERE home_player_10=13383 AND season='2008/2009'"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_11=95533 WHERE home_player_11=13383 AND season='2008/2009'"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_1=95533 WHERE away_player_1=13383 AND season='2008/2009'"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_2=95533 WHERE away_player_2=13383 AND season='2008/2009'"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_3=95533 WHERE away_player_3=13383 AND season='2008/2009'"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_4=95533 WHERE away_player_4=13383 AND season='2008/2009'"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_5=95533 WHERE away_player_5=13383 AND season='2008/2009'"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_6=95533 WHERE away_player_6=13383 AND season='2008/2009'"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_7=95533 WHERE away_player_7=13383 AND season='2008/2009'"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_8=95533 WHERE away_player_8=13383 AND season='2008/2009'"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_9=95533 WHERE away_player_9=13383 AND season='2008/2009'"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_10=95533 WHERE away_player_10=13383 AND season='2008/2009'"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_11=95533 WHERE away_player_11=13383 AND season='2008/2009'"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="Sam Irving",
+      instruction="Hello, I'm Sam Irving. I need to update the Player_Attributes record for player James Forrest (player_api_id: 185566, player_fifa_api_id: 200630) where overall_rating is 74 and the date is '2015-09-26'. Please set the potential to 81 in that record.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player_Attributes SET potential = 81 WHERE player_api_id = 185566 AND player_fifa_api_id = 200630 AND overall_rating = 74 AND date = '2015-09-26';"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="player_api_id: 128456, player_fifa_api_id: 188145, player_name: 'Abdelhamid El Kaoutari'",
+      instruction="I am reviewing disciplinary records. I have discovered an error in the Match table for match_api_id 830530. The card event with id 1563614 was wrongly assigned to Abdelhamid El Kaoutari (player_api_id: 128456, player_fifa_api_id: 188145), but it should actually be assigned to Bryan Dabo (player_api_id: 202633, player_fifa_api_id: 199170). Please (1) authenticate that both player_api_id 128456 and player_api_id 202633 exist, and then (2) for match_api_id 830530, update the 'card' column: locate card id 1563614 and change player1 from 128456 to 202633. Only this card id should be altered.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT * FROM Player WHERE player_api_id = 128456 AND player_fifa_api_id = 188145;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT * FROM Player WHERE player_api_id = 202633 AND player_fifa_api_id = 199170;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET card = REPLACE(card, '<card_type>y</card_type><player1>128456</player1><sortorder>0</sortorder><team>10249</team><n>21</n><type>card</type><id>1563614</id>', '<card_type>y</card_type><player1>202633</player1><sortorder>0</sortorder><team>10249</team><n>21</n><type>card</type><id>1563614</id>') WHERE match_api_id = 830530;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="analyst.jclarke@footballanalytics.com",
+      instruction="You are analyst J. Clarke and your task is to update every Match record in the database for the 2011/2012 season in which Jonjo Shelvey (player_api_id: 127130, player_fifa_api_id: 189165) appeared, either as a home or away player (in any of the fields home_player_1 through home_player_11 or away_player_1 through away_player_11). For each such Match, you must update the 'foulcommit' field by appending the note 'Reviewed by analyst J. Clarke on 2024-06-10' at the end of the existing XML text in the 'foulcommit' column. The parameters for your task are: season='2011/2012', player_api_id=127130, append_text='Reviewed by analyst J. Clarke on 2024-06-10'.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET foulcommit = foulcommit || ' Reviewed by analyst J. Clarke on 2024-06-10' WHERE season = '2011/2012' AND (home_player_1 = 127130 OR home_player_2 = 127130 OR home_player_3 = 127130 OR home_player_4 = 127130 OR home_player_5 = 127130 OR home_player_6 = 127130 OR home_player_7 = 127130 OR home_player_8 = 127130 OR home_player_9 = 127130 OR home_player_10 = 127130 OR home_player_11 = 127130 OR away_player_1 = 127130 OR away_player_2 = 127130 OR away_player_3 = 127130 OR away_player_4 = 127130 OR away_player_5 = 127130 OR away_player_6 = 127130 OR away_player_7 = 127130 OR away_player_8 = 127130 OR away_player_9 = 127130 OR away_player_10 = 127130 OR away_player_11 = 127130);"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="299981",
+      instruction="My name is Pablo Mari Villar, and my player_api_id is 299981 with player_fifa_api_id 206654. There is a mistake in my database profile. Please update my birthday from '1993-08-31 00:00:00' to '1993-09-01 00:00:00' and change my weight from 192 to 190.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET birthday = '1993-09-01 00:00:00', weight = 190 WHERE player_api_id = 299981 AND player_fifa_api_id = 206654;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="manager_demo",
+      instruction="As a club manager, I want to update Mamadou Kone's height to 180 and weight to 165 (player_api_id=292771) in the Player table, and add a new Player_Attributes record for him with the following attributes: player_fifa_api_id=204992, player_api_id=292771, date='2024-05-31', overall_rating=72, potential=78, preferred_foot='Right', attacking_work_rate='Medium', defensive_work_rate='High', crossing=60.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height=180, weight=165 WHERE player_api_id=292771;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "INSERT INTO Player_Attributes (player_fifa_api_id, player_api_id, date, overall_rating, potential, preferred_foot, attacking_work_rate, defensive_work_rate, crossing) VALUES (204992, 292771, '2024-05-31', 72, 78, 'Right', 'Medium', 'High', 60);"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="Rachel_SportsAnalyst",
+      instruction="Hi, I noticed a data issue in match_api_id 836097. Player Gregoor van Dijk (player_api_id: 37196) is currently assigned to away_player_8, but he should be on the home team for this match. Please: (1) remove him from away_player_8 by setting it to NULL, and (2) set home_player_7 to 37196, both in the Match table for match_api_id 836097.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_8 = NULL WHERE match_api_id = 836097;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_7 = 37196 WHERE match_api_id = 836097;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="scout_bern_11",
+      instruction="Hello, I'm an analyst for Switzerland Super League, user ID scout_bern_11. I've discovered that our player Dario Lezcano, player_api_id 104646, has incorrect information in the Player table: his birthday should be '1991-06-30 00:00:00' and his height should be 180.0 cm. Please update both these fields for player_api_id 104646. After this correction, give me a list of all matches in the 2013/2014 season where Dario Lezcano (player_api_id 104646) played, including match_api_id, home_team_api_id, away_team_api_id, date, and which team he played for (home or away).",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET birthday = '1991-06-30 00:00:00', height = 180.0 WHERE player_api_id = 104646;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT match_api_id, home_team_api_id, away_team_api_id, date, 'home' AS played_for FROM Match WHERE season = '2013/2014' AND (home_player_1 = 104646 OR home_player_2 = 104646 OR home_player_3 = 104646 OR home_player_4 = 104646 OR home_player_5 = 104646 OR home_player_6 = 104646 OR home_player_7 = 104646 OR home_player_8 = 104646 OR home_player_9 = 104646 OR home_player_10 = 104646 OR home_player_11 = 104646) UNION ALL SELECT match_api_id, home_team_api_id, away_team_api_id, date, 'away' AS played_for FROM Match WHERE season = '2013/2014' AND (away_player_1 = 104646 OR away_player_2 = 104646 OR away_player_3 = 104646 OR away_player_4 = 104646 OR away_player_5 = 104646 OR away_player_6 = 104646 OR away_player_7 = 104646 OR away_player_8 = 104646 OR away_player_9 = 104646 OR away_player_10 = 104646 OR away_player_11 = 104646);"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="Anne Blom",
+      instruction="You are Anne Blom, a meticulous team analyst. You discovered that the database record for Joost Broerse is not accurate: his weight should be 185, not 183. The player_api_id for Joost Broerse is 26491. Please update the Player table so that Joost Broerse (player_api_id=26491) has his weight correctly set to 185.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET weight = 185 WHERE player_api_id = 26491;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="admin_club",
+      instruction="As the club administrator, I need to correct the away team's score for match_api_id 1988919, where player_api_id 37770 (Kasper Schmeichel) was involved, due to a scoring error. Please update the away_team_goal to 2 for match_api_id 1988919, ensuring this player participated in that match before making the change.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT * FROM Match WHERE match_api_id = 1988919 AND (home_player_1 = 37770 OR home_player_2 = 37770 OR home_player_3 = 37770 OR home_player_4 = 37770 OR home_player_5 = 37770 OR home_player_6 = 37770 OR home_player_7 = 37770 OR home_player_8 = 37770 OR home_player_9 = 37770 OR home_player_10 = 37770 OR home_player_11 = 37770 OR away_player_1 = 37770 OR away_player_2 = 37770 OR away_player_3 = 37770 OR away_player_4 = 37770 OR away_player_5 = 37770 OR away_player_6 = 37770 OR away_player_7 = 37770 OR away_player_8 = 37770 OR away_player_9 = 37770 OR away_player_10 = 37770 OR away_player_11 = 37770)"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_team_goal = 2 WHERE match_api_id = 1988919"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="admin_football",
+      instruction="I am updating Ross Draper's player attributes. His player_api_id is 95352 and the Player_Attributes record id is 1001. Set overall_rating=75, potential=78, preferred_foot='Right', attacking_work_rate='High', and defensive_work_rate='Medium' for this record. After updating, confirm his overall_rating from the latest Player_Attributes record with player_api_id=95352.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player_Attributes SET overall_rating=75, potential=78, preferred_foot='Right', attacking_work_rate='High', defensive_work_rate='Medium' WHERE id=1001 AND player_api_id=95352;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT overall_rating FROM Player_Attributes WHERE player_api_id=95352 ORDER BY date DESC LIMIT 1;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="lucas.borges@example.com",
+      instruction="I'm Lucas Borges and I'm maintaining the player records. I need to update the Player table so that the record with player_api_id=45355 now shows player_name='Ferreira Gomes Paulo Sergio' (the current value is 'Ferreira Gomes Paulo Sergio,22'). After you've completed that update, check the match_view to confirm that any matches involving 'Ferreira Gomes Paulo Sergio' now correctly display this updated player name.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET player_name = 'Ferreira Gomes Paulo Sergio' WHERE player_api_id = 45355;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT * FROM match_view WHERE home_gk = 'Ferreira Gomes Paulo Sergio' OR home_center_back_1 = 'Ferreira Gomes Paulo Sergio' OR home_center_back_2 = 'Ferreira Gomes Paulo Sergio' OR home_right_back = 'Ferreira Gomes Paulo Sergio' OR home_left_back = 'Ferreira Gomes Paulo Sergio' OR home_midfield_1 = 'Ferreira Gomes Paulo Sergio' OR home_midfield_2 = 'Ferreira Gomes Paulo Sergio' OR home_midfield_3 = 'Ferreira Gomes Paulo Sergio' OR home_midfield_4 = 'Ferreira Gomes Paulo Sergio' OR home_second_forward = 'Ferreira Gomes Paulo Sergio' OR home_center_forward = 'Ferreira Gomes Paulo Sergio' OR away_gk = 'Ferreira Gomes Paulo Sergio' OR away_center_back_1 = 'Ferreira Gomes Paulo Sergio' OR away_center_back_2 = 'Ferreira Gomes Paulo Sergio' OR away_right_back = 'Ferreira Gomes Paulo Sergio' OR away_left_back = 'Ferreira Gomes Paulo Sergio' OR away_midfield_1 = 'Ferreira Gomes Paulo Sergio' OR away_midfield_2 = 'Ferreira Gomes Paulo Sergio' OR away_midfield_3 = 'Ferreira Gomes Paulo Sergio' OR away_midfield_4 = 'Ferreira Gomes Paulo Sergio' OR away_second_forward = 'Ferreira Gomes Paulo Sergio' OR away_center_forward = 'Ferreira Gomes Paulo Sergio';"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="admin_001",
+      instruction="I am a league data administrator. I need to correct two things: First, update player Stanislav Kritsyuk's (player_api_id=426359) details in the Player table to have birthday '1990-12-15 00:00:00', height 192, and weight 185. Second, for the match with match_api_id 1750780, update the home goalkeeper (home_player_1) to player_api_id=426359 (Stanislav Kritsyuk) in the Match table. Please confirm both modifications.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET birthday = '1990-12-15 00:00:00', height = 192, weight = 185 WHERE player_api_id = 426359;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_1 = 426359 WHERE match_api_id = 1750780;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="olivia-murray",
+      instruction="Your name is Olivia Murray. You are analytical and focused on tactical details. You wish to correct Liam Cooper's birthday to '1991-09-01' in the Player table for player_api_id=24531, and immediately view his updated profile. Afterward, you want to see a list of team_api_id values of all teams that fielded Liam Cooper (player_api_id=24531) as home_player_2 or away_player_2 in the Match table. Please perform the update first, then retrieve the updated Player info and the relevant team_api_ids.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT * FROM Player WHERE player_api_id=24531"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET birthday='1991-09-01' WHERE player_api_id=24531"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT * FROM Player WHERE player_api_id=24531"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT DISTINCT home_team_api_id FROM Match WHERE home_player_2=24531 UNION SELECT DISTINCT away_team_api_id FROM Match WHERE away_player_2=24531"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="11851",
+      instruction="You are Nuno Silva (player_api_id: 11851), a football player. You've been reviewing your health profile after some recent games in the 2009/2010 season. First, you want to see all matches from the 2009/2010 season where you were in the starting lineup as a home player (your player_api_id appears in any of the home_player_1 to home_player_11 slots). Then, you want to update your official weight from 170 to 172 in the player database, since your latest medical check showed you gained 2 pounds. Your player_api_id is 11851 and your player_fifa_api_id is 163091.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT match_api_id, date, home_team_api_id, away_team_api_id, home_player_1, home_player_2, home_player_3, home_player_4, home_player_5, home_player_6, home_player_7, home_player_8, home_player_9, home_player_10, home_player_11 FROM Match WHERE season = '2009/2010' AND (home_player_1 = 11851 OR home_player_2 = 11851 OR home_player_3 = 11851 OR home_player_4 = 11851 OR home_player_5 = 11851 OR home_player_6 = 11851 OR home_player_7 = 11851 OR home_player_8 = 11851 OR home_player_9 = 11851 OR home_player_10 = 11851 OR home_player_11 = 11851);"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET weight = 172 WHERE player_api_id = 11851 AND player_fifa_api_id = 163091;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="team_manager_01",
+      instruction="As the team manager, I want to update Marcus Berg's performance assessment for the match on 2010-01-23 00:00:00. His player_api_id is 39141. Please set attacking_work_rate to 'High' and defensive_work_rate to 'Medium' for that date.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player_Attributes SET attacking_work_rate = 'High', defensive_work_rate = 'Medium' WHERE player_api_id = 39141 AND date = '2010-01-23 00:00:00';"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="sportsfan_888",
+      instruction="Hi, my name is sportsfan_888 and I am a careful analyst of player development. After watching Calvin Kadi (player_api_id: 206738, player_fifa_api_id: 200348) play as away_player_10 in match_api_id 859844, I noticed an improvement in his game. Please update Calvin Kadi's most recent Player_Attributes entry so that agility is set to 85 and dribbling to 78. Only update the row where player_api_id is 206738, player_fifa_api_id is 200348, and the date is the latest for this player.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player_Attributes SET agility = 85, dribbling = 78 WHERE player_api_id = 206738 AND player_fifa_api_id = 200348 AND date = (SELECT MAX(date) FROM Player_Attributes WHERE player_api_id = 206738 AND player_fifa_api_id = 200348);"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="club_manager",
+      instruction="You are a club manager. One of your players, Rick Verbeek (player_api_id: 110132), has an updated profile after a team review: his birthday should now be set to '1988-11-15' and his weight should be 146. Please: 1) find Rick Verbeek by player_api_id, 2) update his birthday and weight to these new values, 3) list all matches (with match_api_id, season, and indicate if home or away) in the Netherlands Eredivisie (league_id=13274) where he appeared, so you can issue a press release.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT * FROM Player WHERE player_api_id = 110132;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET birthday = '1988-11-15', weight = 146 WHERE player_api_id = 110132;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT match_api_id, season, 'home' AS team_side FROM Match WHERE league_id = 13274 AND (home_player_1 = 110132 OR home_player_2 = 110132 OR home_player_3 = 110132 OR home_player_4 = 110132 OR home_player_5 = 110132 OR home_player_6 = 110132 OR home_player_7 = 110132 OR home_player_8 = 110132 OR home_player_9 = 110132 OR home_player_10 = 110132 OR home_player_11 = 110132) UNION ALL SELECT match_api_id, season, 'away' AS team_side FROM Match WHERE league_id = 13274 AND (away_player_1 = 110132 OR away_player_2 = 110132 OR away_player_3 = 110132 OR away_player_4 = 110132 OR away_player_5 = 110132 OR away_player_6 = 110132 OR away_player_7 = 110132 OR away_player_8 = 110132 OR away_player_9 = 110132 OR away_player_10 = 110132 OR away_player_11 = 110132);"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="official_stats_keeper",
+      instruction="You are the official stats keeper for the 2015/2016 Eredivisie season and want to correct the stats for player Kai van Hese (player_api_id: 150206) in the match on 2016-05-08 (match_api_id: 1983576). You realize his overall rating and defensive work rate were mis-recorded for that day. Please update his record in Player_Attributes for that date (date: '2016-05-08') to set overall_rating = 72 and defensive_work_rate = 'High'. After the update, fetch and show me all the fields for his record from Player_Attributes for that date to verify the correction.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player_Attributes SET overall_rating = 72, defensive_work_rate = 'High' WHERE player_api_id = 150206 AND date = '2016-05-08';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT * FROM Player_Attributes WHERE player_api_id = 150206 AND date = '2016-05-08';"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="admin_callejon_correction",
+      instruction="I am responsible for data integrity for player records. Please update the information for player with player_api_id 150330 (Jose Maria Callejon). Change his height to 179 and his weight to 159. Leave all other fields as they are.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height=179, weight=159 WHERE player_api_id=150330;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="68260",
+      instruction="Hi, I am working on data cleanup for player records. Please update Marti Crespi (player_api_id: 68260) to set height to 182.00 cm and weight to 159 kg. Then, show me all matches where he appeared in either team's lineup as any position.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height = 182.00, weight = 159 WHERE player_api_id = 68260;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT match_api_id, season, stage, date, home_team_api_id, away_team_api_id FROM Match WHERE 68260 IN (home_player_1, home_player_2, home_player_3, home_player_4, home_player_5, home_player_6, home_player_7, home_player_8, home_player_9, home_player_10, home_player_11, away_player_1, away_player_2, away_player_3, away_player_4, away_player_5, away_player_6, away_player_7, away_player_8, away_player_9, away_player_10, away_player_11);"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="manager_234",
+      instruction="I am team manager David. For season '2015/2016', player Abdul Majeed Waris (player_api_id=196947) was just injured, and I need to replace him in all lineups (both home and away teams) with player Bakary Soro (player_api_id=147960) for all matches in that season. Please confirm both player identities, find all matches in season '2015/2016' where Abdul Majeed Waris is in any starting lineup (columns home_player_1 to home_player_11 or away_player_1 to away_player_11), and for each of these matches update every occurrence of 196947 in those columns to 147960.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT * FROM Player WHERE player_api_id=196947 AND player_name='Abdul Majeed Waris';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT * FROM Player WHERE player_api_id=147960 AND player_name='Bakary Soro';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT id, match_api_id, home_player_1, home_player_2, home_player_3, home_player_4, home_player_5, home_player_6, home_player_7, home_player_8, home_player_9, home_player_10, home_player_11, away_player_1, away_player_2, away_player_3, away_player_4, away_player_5, away_player_6, away_player_7, away_player_8, away_player_9, away_player_10, away_player_11 FROM Match WHERE season='2015/2016' AND (home_player_1=196947 OR home_player_2=196947 OR home_player_3=196947 OR home_player_4=196947 OR home_player_5=196947 OR home_player_6=196947 OR home_player_7=196947 OR home_player_8=196947 OR home_player_9=196947 OR home_player_10=196947 OR home_player_11=196947 OR away_player_1=196947 OR away_player_2=196947 OR away_player_3=196947 OR away_player_4=196947 OR away_player_5=196947 OR away_player_6=196947 OR away_player_7=196947 OR away_player_8=196947 OR away_player_9=196947 OR away_player_10=196947 OR away_player_11=196947);"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_1=CASE WHEN home_player_1=196947 THEN 147960 ELSE home_player_1 END, home_player_2=CASE WHEN home_player_2=196947 THEN 147960 ELSE home_player_2 END, home_player_3=CASE WHEN home_player_3=196947 THEN 147960 ELSE home_player_3 END, home_player_4=CASE WHEN home_player_4=196947 THEN 147960 ELSE home_player_4 END, home_player_5=CASE WHEN home_player_5=196947 THEN 147960 ELSE home_player_5 END, home_player_6=CASE WHEN home_player_6=196947 THEN 147960 ELSE home_player_6 END, home_player_7=CASE WHEN home_player_7=196947 THEN 147960 ELSE home_player_7 END, home_player_8=CASE WHEN home_player_8=196947 THEN 147960 ELSE home_player_8 END, home_player_9=CASE WHEN home_player_9=196947 THEN 147960 ELSE home_player_9 END, home_player_10=CASE WHEN home_player_10=196947 THEN 147960 ELSE home_player_10 END, home_player_11=CASE WHEN home_player_11=196947 THEN 147960 ELSE home_player_11 END, away_player_1=CASE WHEN away_player_1=196947 THEN 147960 ELSE away_player_1 END, away_player_2=CASE WHEN away_player_2=196947 THEN 147960 ELSE away_player_2 END, away_player_3=CASE WHEN away_player_3=196947 THEN 147960 ELSE away_player_3 END, away_player_4=CASE WHEN away_player_4=196947 THEN 147960 ELSE away_player_4 END, away_player_5=CASE WHEN away_player_5=196947 THEN 147960 ELSE away_player_5 END, away_player_6=CASE WHEN away_player_6=196947 THEN 147960 ELSE away_player_6 END, away_player_7=CASE WHEN away_player_7=196947 THEN 147960 ELSE away_player_7 END, away_player_8=CASE WHEN away_player_8=196947 THEN 147960 ELSE away_player_8 END, away_player_9=CASE WHEN away_player_9=196947 THEN 147960 ELSE away_player_9 END, away_player_10=CASE WHEN away_player_10=196947 THEN 147960 ELSE away_player_10 END, away_player_11=CASE WHEN away_player_11=196947 THEN 147960 ELSE away_player_11 END WHERE season='2015/2016' AND (home_player_1=196947 OR home_player_2=196947 OR home_player_3=196947 OR home_player_4=196947 OR home_player_5=196947 OR home_player_6=196947 OR home_player_7=196947 OR home_player_8=196947 OR home_player_9=196947 OR home_player_10=196947 OR home_player_11=196947 OR away_player_1=196947 OR away_player_2=196947 OR away_player_3=196947 OR away_player_4=196947 OR away_player_5=196947 OR away_player_6=196947 OR away_player_7=196947 OR away_player_8=196947 OR away_player_9=196947 OR away_player_10=196947 OR away_player_11=196947);"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="stats_analyst",
+      instruction="I am a football data analyst. I need to update the physical details for the player 'Gabriel Obertan'. The latest official listing says his height is 188 centimeters and his weight is 185 pounds. Please update his height to 188 and his weight to 185. Afterwards, retrieve his new height and weight to confirm the update.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT player_api_id FROM Player WHERE player_name = 'Gabriel Obertan';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height = 188, weight = 185 WHERE player_name = 'Gabriel Obertan';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT height, weight FROM Player WHERE player_name = 'Gabriel Obertan';"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="team_manager",
+      instruction="You are the manager of the home team for match_api_id 1029941. After reviewing your lineup, you decide to swap the assignments of two players: player with player_api_id 178778 (originally home_player_1) and player with player_api_id 27512 (originally home_player_9). Please update the Match record so that home_player_1 is now 27512 and home_player_9 is now 178778, only for match_api_id 1029941.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_1 = 27512 WHERE match_api_id = 1029941;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_9 = 178778 WHERE match_api_id = 1029941;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="player_admin_001",
+      instruction="I am the official stats manager for the player James McCarthy (player_api_id 101192) and need to update his physical information in the database: set his height to 182 and weight to 162 as per his latest medical check-up. Please ensure the changes reflect exactly these values for player_api_id 101192.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height = 182, weight = 162 WHERE player_api_id = 101192;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="player_api_id: 240539",
+      instruction="I'm Sara and found an error in the database for Omar Elabdellaoui (player_api_id 240539). His weight is wrong; it should be 165. Please update it. Also, insert a new row in Player_Attributes for Omar (player_api_id 240539, player_fifa_api_id 190824) with the date '2014-06-15', overall_rating 72, potential 80, preferred_foot 'Right', attacking_work_rate 'High', defensive_work_rate 'Medium', crossing 70, finishing 48, heading_accuracy 62, short_passing 75, volleys 50, dribbling 72, curve 62, free_kick_accuracy 54, long_passing 67, ball_control 73, acceleration 84, sprint_speed 86, agility 79, reactions 74, balance 76, shot_power 66, jumping 68, stamina 78, strength 70, long_shots 50, aggression 72, interceptions 55, positioning 63, vision 68, penalties 57, marking 62, standing_tackle 74, sliding_tackle 70, gk_diving 12, gk_handling 10, gk_kicking 8, gk_positioning 10, gk_reflexes 13.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET weight=165 WHERE player_api_id=240539 AND player_name='Omar Elabdellaoui';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "INSERT INTO Player_Attributes (player_fifa_api_id, player_api_id, date, overall_rating, potential, preferred_foot, attacking_work_rate, defensive_work_rate, crossing, finishing, heading_accuracy, short_passing, volleys, dribbling, curve, free_kick_accuracy, long_passing, ball_control, acceleration, sprint_speed, agility, reactions, balance, shot_power, jumping, stamina, strength, long_shots, aggression, interceptions, positioning, vision, penalties, marking, standing_tackle, sliding_tackle, gk_diving, gk_handling, gk_kicking, gk_positioning, gk_reflexes) VALUES (190824, 240539, '2014-06-15', 72, 80, 'Right', 'High', 'Medium', 70, 48, 62, 75, 50, 72, 62, 54, 67, 73, 84, 86, 79, 74, 76, 66, 68, 78, 70, 50, 72, 55, 63, 68, 57, 62, 74, 70, 12, 10, 8, 10, 13);"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="performance_analyst_matt_jarvis",
+      instruction="I am the performance analyst for Matt Jarvis (player_api_id = 23538). After a recent medical checkup, I need to update Matt’s height to 172.0 cm and weight to 160 pounds in the player records. After that, I want a list of all matches where Matt appeared as any home_player or away_player, including: the match date, opponent team_api_id, home/away indicator, and the goals for both teams. Please perform the updates and fetch the required match information.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height = 172.0, weight = 160 WHERE player_api_id = 23538;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT date, CASE WHEN home_player_1 = 23538 OR home_player_2 = 23538 OR home_player_3 = 23538 OR home_player_4 = 23538 OR home_player_5 = 23538 OR home_player_6 = 23538 OR home_player_7 = 23538 OR home_player_8 = 23538 OR home_player_9 = 23538 OR home_player_10 = 23538 OR home_player_11 = 23538 THEN 'home' ELSE 'away' END AS home_away, CASE WHEN home_player_1 = 23538 OR home_player_2 = 23538 OR home_player_3 = 23538 OR home_player_4 = 23538 OR home_player_5 = 23538 OR home_player_6 = 23538 OR home_player_7 = 23538 OR home_player_8 = 23538 OR home_player_9 = 23538 OR home_player_10 = 23538 OR home_player_11 = 23538 THEN away_team_api_id ELSE home_team_api_id END AS opponent_team_api_id, home_team_goal, away_team_goal FROM Match WHERE home_player_1 = 23538 OR home_player_2 = 23538 OR home_player_3 = 23538 OR home_player_4 = 23538 OR home_player_5 = 23538 OR home_player_6 = 23538 OR home_player_7 = 23538 OR home_player_8 = 23538 OR home_player_9 = 23538 OR home_player_10 = 23538 OR home_player_11 = 23538 OR away_player_1 = 23538 OR away_player_2 = 23538 OR away_player_3 = 23538 OR away_player_4 = 23538 OR away_player_5 = 23538 OR away_player_6 = 23538 OR away_player_7 = 23538 OR away_player_8 = 23538 OR away_player_9 = 23538 OR away_player_10 = 23538 OR away_player_11 = 23538;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="player_fan_84",
+      instruction="My name is Carlos and I'm a statistics coordinator for historical football records. In the match with match_api_id 1778139, currently, a goal at the 80th minute is attributed to player_api_id 25462 (Victor Casadesus), but I have documentation proving that it was actually scored by player_api_id 46621 (Nabil El Zhar). Please update the goal entry in the 'goal' field of the Match table for match_api_id 1778139, so that the goal at the 80th minute is assigned to player_api_id 46621, and remove the reference to player_api_id 25462 from this goal event. This is an official data correction.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT * FROM Player WHERE player_api_id=25462"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT * FROM Player WHERE player_api_id=46621"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET goal='<goal><value><comment>n</comment><stats><goals>1</goals><shoton>1</shoton></stats><event_incident_typefk>406</event_incident_typefk><coordinates><value>21</value><value>6</value></coordinates><elapsed>31</elapsed><player2>251925</player2><subtype>header</subtype><player1>213805</player1><sortorder>1</sortorder><team>8302</team><id>3929506</id><n>88</n><type>goal</type><goal_type>n</goal_type></value><value><comment>n</comment><stats><goals>1</goals><shoton>1</shoton></stats><event_incident_typefk>393</event_incident_typefk><coordinates><value>25</value><value>64</value></coordinates><elapsed>80</elapsed><player2>46621</player2><subtype>shot</subtype><player1>46621</player1><sortorder>3</sortorder><team>8581</team><id>3930053</id><n>352</n><type>goal</type><goal_type>n</goal_type></value></goal>' WHERE match_api_id=1778139"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="coach_update_01",
+      instruction="I am the head coach, and I need to update the attributes of player Fabio Quagliarella (player_fifa_api_id: 159261, player_api_id: 39540). Set the date as '2015-06-01'. Please set his acceleration to 80, crossing to 78, and ball_control to 84. Other attributes should be: overall_rating 81, potential 83, preferred_foot 'Right', attacking_work_rate 'High', defensive_work_rate 'Medium', finishing 85, heading_accuracy 82, short_passing 77, volleys 81, dribbling 80, curve 76, free_kick_accuracy 75, long_passing 72, sprint_speed 77, agility 79, reactions 78, balance 75, shot_power 84, jumping 83, stamina 81, strength 80, long_shots 80, aggression 76, interceptions 65, positioning 83, vision 78, penalties 82, marking 62, standing_tackle 68, sliding_tackle 65, gk_diving 8, gk_handling 12, gk_kicking 10, gk_positioning 7, gk_reflexes 11.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "INSERT INTO Player_Attributes (player_fifa_api_id, player_api_id, date, overall_rating, potential, preferred_foot, attacking_work_rate, defensive_work_rate, crossing, finishing, heading_accuracy, short_passing, volleys, dribbling, curve, free_kick_accuracy, long_passing, ball_control, acceleration, sprint_speed, agility, reactions, balance, shot_power, jumping, stamina, strength, long_shots, aggression, interceptions, positioning, vision, penalties, marking, standing_tackle, sliding_tackle, gk_diving, gk_handling, gk_kicking, gk_positioning, gk_reflexes) VALUES (159261, 39540, '2015-06-01', 81, 83, 'Right', 'High', 'Medium', 78, 85, 82, 77, 81, 80, 76, 75, 72, 84, 80, 77, 79, 78, 75, 84, 83, 81, 80, 80, 76, 65, 83, 78, 82, 62, 68, 65, 8, 12, 10, 7, 11);"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="club_data_analyst",
+      instruction="As the club data analyst, I need to remove all future match appearances of our retired player Miroslav Bozok (player_api_id=12307) from the database for record accuracy. For all matches dated after 1984-10-19, wherever player_api_id=12307 appears in any of the fields home_player_1 to home_player_11 or away_player_1 to away_player_11 in the Match table, set that field to NULL. Please perform these updates for every relevant field using player_api_id=12307 and date>'1984-10-19'.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_1 = NULL WHERE home_player_1 = 12307 AND date > '1984-10-19';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_2 = NULL WHERE home_player_2 = 12307 AND date > '1984-10-19';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_3 = NULL WHERE home_player_3 = 12307 AND date > '1984-10-19';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_4 = NULL WHERE home_player_4 = 12307 AND date > '1984-10-19';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_5 = NULL WHERE home_player_5 = 12307 AND date > '1984-10-19';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_6 = NULL WHERE home_player_6 = 12307 AND date > '1984-10-19';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_7 = NULL WHERE home_player_7 = 12307 AND date > '1984-10-19';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_8 = NULL WHERE home_player_8 = 12307 AND date > '1984-10-19';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_9 = NULL WHERE home_player_9 = 12307 AND date > '1984-10-19';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_10 = NULL WHERE home_player_10 = 12307 AND date > '1984-10-19';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_11 = NULL WHERE home_player_11 = 12307 AND date > '1984-10-19';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_1 = NULL WHERE away_player_1 = 12307 AND date > '1984-10-19';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_2 = NULL WHERE away_player_2 = 12307 AND date > '1984-10-19';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_3 = NULL WHERE away_player_3 = 12307 AND date > '1984-10-19';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_4 = NULL WHERE away_player_4 = 12307 AND date > '1984-10-19';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_5 = NULL WHERE away_player_5 = 12307 AND date > '1984-10-19';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_6 = NULL WHERE away_player_6 = 12307 AND date > '1984-10-19';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_7 = NULL WHERE away_player_7 = 12307 AND date > '1984-10-19';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_8 = NULL WHERE away_player_8 = 12307 AND date > '1984-10-19';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_9 = NULL WHERE away_player_9 = 12307 AND date > '1984-10-19';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_10 = NULL WHERE away_player_10 = 12307 AND date > '1984-10-19';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_11 = NULL WHERE away_player_11 = 12307 AND date > '1984-10-19';"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="612405",
+      instruction="Your name is Kevin Soni and your player_api_id is 612405. You noticed your profile lists your height as 182.88 and weight as 168, but your correct height is 185 (cm) and weight is 170 (kg). Please update your record to set your height to 185 and your weight to 170, using player_api_id 612405.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT * FROM Player WHERE player_name = 'Kevin Soni' AND player_api_id = 612405;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height = 185, weight = 170 WHERE player_api_id = 612405;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="club_analytics_dept_01",
+      instruction="I am the club analyst updating player stats after the first match of the 2015/2016 season. For player Andre Ayew (player_api_id: 95955, player_fifa_api_id: 176571), please add a new row to Player_Attributes with the following details: date='2015-08-31', overall_rating=80, potential=85, preferred_foot='Left', attacking_work_rate='High', defensive_work_rate='Medium', crossing=75, finishing=82, heading_accuracy=68, short_passing=80, volleys=79, dribbling=81, curve=78, free_kick_accuracy=72, long_passing=74, ball_control=82, acceleration=87, sprint_speed=89, agility=84, reactions=81, balance=79, shot_power=80, jumping=76, stamina=85, strength=72, long_shots=78, aggression=80, interceptions=67, positioning=77, vision=76, penalties=69, marking=62, standing_tackle=65, sliding_tackle=63, gk_diving=12, gk_handling=8, gk_kicking=9, gk_positioning=11, gk_reflexes=15.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "INSERT INTO Player_Attributes (player_fifa_api_id, player_api_id, date, overall_rating, potential, preferred_foot, attacking_work_rate, defensive_work_rate, crossing, finishing, heading_accuracy, short_passing, volleys, dribbling, curve, free_kick_accuracy, long_passing, ball_control, acceleration, sprint_speed, agility, reactions, balance, shot_power, jumping, stamina, strength, long_shots, aggression, interceptions, positioning, vision, penalties, marking, standing_tackle, sliding_tackle, gk_diving, gk_handling, gk_kicking, gk_positioning, gk_reflexes) VALUES (176571, 95955, '2015-08-31', 80, 85, 'Left', 'High', 'Medium', 75, 82, 68, 80, 79, 81, 78, 72, 74, 82, 87, 89, 84, 81, 79, 80, 76, 85, 72, 78, 80, 67, 77, 76, 69, 62, 65, 63, 12, 8, 9, 11, 15);"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="data_admin_simon_klein",
+      instruction="You are Simon Klein, the data admin at the football analytics department. Please confirm that Timo Gebhart (player_api_id: 97752) played as away_team player_8 in match_api_id 1030404. If yes, update his birthday to '1989-04-13', height to 185, and weight to 192 in the Player table. Please confirm by returning the updated values.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT away_player_8 FROM Match WHERE match_api_id = 1030404;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET birthday = '1989-04-13', height = 185, weight = 192 WHERE player_api_id = 97752;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT player_api_id, player_name, birthday, height, weight FROM Player WHERE player_api_id = 97752;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="analyst_001",
+      instruction="I am updating Sergio Pelegrin's height and weight based on new data: set his height to 188 and weight to 168. After that, list every match in the 2013/2014 season in which player_api_id 102630 (Sergio Pelegrin) participated, either as a home or away player.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height = 188, weight = 168 WHERE player_api_id = 102630;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT match_api_id, season, home_team_api_id, away_team_api_id, date FROM Match WHERE season = '2013/2014' AND (home_player_1 = 102630 OR home_player_2 = 102630 OR home_player_3 = 102630 OR home_player_4 = 102630 OR home_player_5 = 102630 OR home_player_6 = 102630 OR home_player_7 = 102630 OR home_player_8 = 102630 OR home_player_9 = 102630 OR home_player_10 = 102630 OR home_player_11 = 102630 OR away_player_1 = 102630 OR away_player_2 = 102630 OR away_player_3 = 102630 OR away_player_4 = 102630 OR away_player_5 = 102630 OR away_player_6 = 102630 OR away_player_7 = 102630 OR away_player_8 = 102630 OR away_player_9 = 102630 OR away_player_10 = 102630 OR away_player_11 = 102630);"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="club_manager_xyz_002",
+      instruction="My name is Patrick Houben, the official data administrator for player registrations. I'm submitting an official update for player Fredric Brillant, whose FIFA API ID is 208521. As per our medical team's report on June 22, 2024, his current height should be 190 (in cm) and weight 166 (in lbs). Please update the player record in the database for Fredric Brillant (player_api_id must match with name and FIFA API ID) to set height = 190 and weight = 166. Let me know once it's done for compliance records.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height = 190, weight = 166 WHERE player_name = 'Fredric Brillant' AND player_fifa_api_id = 208521;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="data_entry_specialist_01",
+      instruction="You are Evelyn Lau, the designated data specialist (user_id: data_entry_specialist_01) tasked with maintaining accurate player statistics. During review, you noticed that player Michael Uchebo (player_api_id: 193410) played in the match with match_api_id 1224166 (date: 2013-02-28), but his height and weight data is outdated. Please update Michael Uchebo's record to set height = 195 and weight = 192 in the Player table.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height = 195, weight = 192 WHERE player_api_id = 193410;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="analyst_1142",
+      instruction="I am the club data officer. Please anonymize the player profile of Valter Birsa. His details are: player_api_id=36121, player_fifa_api_id=176104, birthday='1986-08-07 00:00:00', height=182.88, weight=179, player_name='Valter Birsa'. Update the Player table for this exact record, setting player_name to 'Anonymous X', and birthday and weight to NULL. Do NOT modify his height, player_api_id or player_fifa_api_id. No changes are needed for linked Match or Player_Attributes records. Provide confirmation after the update.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET player_name='Anonymous X', birthday=NULL, weight=NULL WHERE player_api_id=36121 AND player_fifa_api_id=176104 AND player_name='Valter Birsa' AND birthday='1986-08-07 00:00:00' AND height=182.88 AND weight=179;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="sports_analyst_1",
+      instruction="You are a sports analyst. You need to correct the official height record of the footballer Wiljan Pluim to 192 (centimeters). Once updated, retrieve a list of all matches in which Wiljan Pluim (player_api_id) participated during the 2014/2015 season. Use the player name ('Wiljan Pluim') for lookup, set his new height as 192, and consider any match record for season '2014/2015' in which this player appears in any player slot (home or away).",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT player_api_id FROM Player WHERE player_name = 'Wiljan Pluim';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height = 192 WHERE player_api_id = 118843;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT match_api_id, season, date, home_team_api_id, away_team_api_id FROM Match WHERE season = '2014/2015' AND (home_player_1 = 118843 OR home_player_2 = 118843 OR home_player_3 = 118843 OR home_player_4 = 118843 OR home_player_5 = 118843 OR home_player_6 = 118843 OR home_player_7 = 118843 OR home_player_8 = 118843 OR home_player_9 = 118843 OR home_player_10 = 118843 OR home_player_11 = 118843 OR away_player_1 = 118843 OR away_player_2 = 118843 OR away_player_3 = 118843 OR away_player_4 = 118843 OR away_player_5 = 118843 OR away_player_6 = 118843 OR away_player_7 = 118843 OR away_player_8 = 118843 OR away_player_9 = 118843 OR away_player_10 = 118843 OR away_player_11 = 118843);"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="club_manager_001",
+      instruction="I am the team manager. I recently got updated physical stats for Andrew Robertson, player_api_id 357880. Please update his height to 180.0 and his weight to 142 in your records.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height = 180.0, weight = 142 WHERE player_api_id = 357880 AND player_name = 'Andrew Robertson';"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="data_steward_1",
+      instruction="You are a football database data steward. Please update the player Tommaso Berni (player_api_id: 39769) so that his height is now 190.00 instead of the current value. After updating, find and report the next match he played in (i.e., the earliest match date where he is listed in any home_player or away_player field), and show the home_team_goal and away_team_goal for that match.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height = 190.00 WHERE player_api_id = 39769;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT date, match_api_id, home_team_goal, away_team_goal FROM Match WHERE 39769 IN (home_player_1,home_player_2,home_player_3,home_player_4,home_player_5,home_player_6,home_player_7,home_player_8,home_player_9,home_player_10,home_player_11,away_player_1,away_player_2,away_player_3,away_player_4,away_player_5,away_player_6,away_player_7,away_player_8,away_player_9,away_player_10,away_player_11) ORDER BY date ASC LIMIT 1;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="analyst_javier_001",
+      instruction="You are football analyst Javier. Update the Player_Attributes entry with id=30921 (for player_api_id=191873, Juanmi) as follows: overall_rating=82, potential=85, preferred_foot='Left', acceleration=91, sprint_speed=88, date='2016-05-01'.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player_Attributes SET overall_rating=82, potential=85, preferred_foot='Left', acceleration=91, sprint_speed=88, date='2016-05-01' WHERE id=30921 AND player_api_id=191873"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="sports_operator",
+      instruction="Player Marco Rigoni (player_api_id=41394) has announced retirement as of today. Please update the Player table to append '(Retired)' to his player_name where player_api_id=41394. Then, for all matches in the Match table from the 2010/2011 season where Marco Rigoni appeared (as any of home_player_1-11 or away_player_1-11 with value 41394), prepend '[RigoniRetired]' to the goal column text. Parameters: player_api_id=41394, season='2010/2011'.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET player_name = 'Marco Rigoni (Retired)' WHERE player_api_id = 41394;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET goal = '[RigoniRetired]' || goal WHERE season = '2010/2011' AND (home_player_1 = 41394 OR home_player_2 = 41394 OR home_player_3 = 41394 OR home_player_4 = 41394 OR home_player_5 = 41394 OR home_player_6 = 41394 OR home_player_7 = 41394 OR home_player_8 = 41394 OR home_player_9 = 41394 OR home_player_10 = 41394 OR home_player_11 = 41394 OR away_player_1 = 41394 OR away_player_2 = 41394 OR away_player_3 = 41394 OR away_player_4 = 41394 OR away_player_5 = 41394 OR away_player_6 = 41394 OR away_player_7 = 41394 OR away_player_8 = 41394 OR away_player_9 = 41394 OR away_player_10 = 41394 OR away_player_11 = 41394);"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="manager_transfer_01",
+      instruction="You are the team manager. You want to transfer the player Lukas Droppa (player_api_id: 275992) from team_api_id 8025 to team_api_id 8020 for the 2015/2016 season. For every match during the 2015/2016 season, where Lukas Droppa appears in the home or away lineup for team_api_id 8025, update the Match record so that his team_api_id changes from 8025 to 8020, and all occurrences of him in home_player_* or away_player_* fields are now under the new team (team_api_id 8020). Please execute all necessary updates for this operation.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_team_api_id = 8020 WHERE season = '2015/2016' AND home_team_api_id = 8025 AND (home_player_1 = 275992 OR home_player_2 = 275992 OR home_player_3 = 275992 OR home_player_4 = 275992 OR home_player_5 = 275992 OR home_player_6 = 275992 OR home_player_7 = 275992 OR home_player_8 = 275992 OR home_player_9 = 275992 OR home_player_10 = 275992 OR home_player_11 = 275992)"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_team_api_id = 8020 WHERE season = '2015/2016' AND away_team_api_id = 8025 AND (away_player_1 = 275992 OR away_player_2 = 275992 OR away_player_3 = 275992 OR away_player_4 = 275992 OR away_player_5 = 275992 OR away_player_6 = 275992 OR away_player_7 = 275992 OR away_player_8 = 275992 OR away_player_9 = 275992 OR away_player_10 = 275992 OR away_player_11 = 275992)"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="coach-update-191053",
+      instruction="You are the head coach. You need to update Tomas Rincon's (player name: 'Tomas Rincon', player_fifa_api_id: 191053, birthday: '1988-01-13') attributes after his great performance. Please set his overall_rating to 83 and potential to 86 for the record dated '2016-06-01'.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT player_api_id FROM Player WHERE player_name = 'Tomas Rincon' AND player_fifa_api_id = 191053 AND birthday = '1988-01-13';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player_Attributes SET overall_rating = 83, potential = 86 WHERE player_api_id = 52243 AND date = '2016-06-01';"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="user_correction123",
+      instruction="I am an official statistician and need to update the records for player 'Jordy Buijs'. His previous birthday is '1988-12-28 00:00:00', height 185.42 cm, and weight 176 lbs. Please update his birthday to '1988-11-28 00:00:00', height to 186.0 cm, and weight to 180 lbs. Additionally, for the match with match_api_id 836617, please update the final score to home_team_goal=1 and away_team_goal=2. Make both updates in the database.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET birthday = '1988-11-28 00:00:00', height = 186.0, weight = 180 WHERE player_name = 'Jordy Buijs' AND birthday = '1988-12-28 00:00:00' AND height = 185.42 AND weight = 176;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_team_goal = 1, away_team_goal = 2 WHERE match_api_id = 836617;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="coach_user_01",
+      instruction="I am the manager and need to update Leandro Trossard's weight to 145 lbs in the Player table, where his player_api_id is 318615. After that, please provide all matches from the Match table where player_api_id 318615 played as any home_player_1 to home_player_11.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET weight = 145 WHERE player_api_id = 318615;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT * FROM Match WHERE home_player_1 = 318615 OR home_player_2 = 318615 OR home_player_3 = 318615 OR home_player_4 = 318615 OR home_player_5 = 318615 OR home_player_6 = 318615 OR home_player_7 = 318615 OR home_player_8 = 318615 OR home_player_9 = 318615 OR home_player_10 = 318615 OR home_player_11 = 318615;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="megan_r_data_mgr",
+      instruction="I am Megan R., a data manager. The Player record for Barry Douglas (player_api_id 142282) has an incorrect weight of 141 in the Player table and must be updated to 148. Before making this change, confirm that Barry Douglas actually played as a home player for team_api_id 9938 in at least one match during the 2014/2015 season. If so, update his weight from 141 to 148 in the Player table. After the update, retrieve his Player record (player_api_id 142282) to confirm and document the new value.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT match_api_id FROM Match WHERE season = '2014/2015' AND home_team_api_id = 9938 AND (home_player_1 = 142282 OR home_player_2 = 142282 OR home_player_3 = 142282 OR home_player_4 = 142282 OR home_player_5 = 142282 OR home_player_6 = 142282 OR home_player_7 = 142282 OR home_player_8 = 142282 OR home_player_9 = 142282 OR home_player_10 = 142282 OR home_player_11 = 142282);"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET weight = 148 WHERE player_api_id = 142282 AND weight = 141;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT * FROM Player WHERE player_api_id = 142282;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="39594",
+      instruction="You are Frederic Dupre (player_api_id: 39594, player_fifa_api_id: 152018, birthday: 1979-05-12, height: 182.88, old weight: 172). Update your weight to 175 in the Player table, then retrieve all matches where you participated as home_player_3 or away_player_7, returning match_api_id and date for each.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET weight = 175 WHERE player_api_id = 39594 AND player_fifa_api_id = 152018;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT match_api_id, date FROM Match WHERE home_player_3 = 39594 OR away_player_7 = 39594;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="club_admin_7730",
+      instruction="You are the administrator for team with team_api_id 7730. You need to correct historical match data for two matches (match_api_id 1147528 played on 2012-05-23 and match_api_id 1227887 played on 2013-05-08) where your home goalkeeper was incorrectly listed. Update both matches so that home_player_1 is set to player_api_id 92024 (Rolf Feltscher). Furthermore, for each of these match dates, update the Player_Attributes record for player_api_id 92024 to set overall_rating=78 to reflect these lineup changes.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_1=92024 WHERE match_api_id=1147528;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_1=92024 WHERE match_api_id=1227887;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player_Attributes SET overall_rating=78 WHERE player_api_id=92024 AND date='2012-05-23 00:00:00';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player_Attributes SET overall_rating=78 WHERE player_api_id=92024 AND date='2013-05-08 00:00:00';"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="football_admin",
+      instruction="I am an administrative manager overseeing player records and team lineups. For player Ryad Boudebouz (player_api_id: 155623, player_fifa_api_id: 188388): 1) update his height to 180 and weight to 168 in the Player table; 2) set his Player_Attributes for date '2015-08-01 00:00:00' to overall_rating 80 and potential 85; 3) for the match where away_team_api_id=10249, season='2015/2016', stage=4 (match_api_id: 1989817), replace him as away_player_10 with Paul Bastien Lasne (player_api_id: 154233).",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height = 180, weight = 168 WHERE player_api_id = 155623 AND player_fifa_api_id = 188388;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player_Attributes SET overall_rating = 80, potential = 85 WHERE player_api_id = 155623 AND date = '2015-08-01 00:00:00';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_10 = 154233 WHERE match_api_id = 1989817 AND season = '2015/2016' AND stage = 4 AND away_team_api_id = 10249 AND away_player_10 = 155623;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="coach_italy_seriea_update",
+      instruction="As the team’s coach, I need to update our player medical records for Antonio Cassano (player_api_id=32748) to height 176 and weight 180, and for Marco Parolo (player_api_id=73999) to height 183 and weight 167. After these changes, check if both Cassano and Parolo played together in any match during the 2013/2014 Italy Serie A season, and tell me the match date(s) and confirm their names.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height=176, weight=180 WHERE player_api_id=32748;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height=183, weight=167 WHERE player_api_id=73999;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT m.date, p1.player_name as player1, p2.player_name as player2 FROM Match m JOIN Player p1 ON p1.player_api_id=32748 JOIN Player p2 ON p2.player_api_id=73999 WHERE m.season='2013/2014' AND (m.home_player_1=32748 OR m.home_player_2=32748 OR m.home_player_3=32748 OR m.home_player_4=32748 OR m.home_player_5=32748 OR m.home_player_6=32748 OR m.home_player_7=32748 OR m.home_player_8=32748 OR m.home_player_9=32748 OR m.home_player_10=32748 OR m.home_player_11=32748 OR m.away_player_1=32748 OR m.away_player_2=32748 OR m.away_player_3=32748 OR m.away_player_4=32748 OR m.away_player_5=32748 OR m.away_player_6=32748 OR m.away_player_7=32748 OR m.away_player_8=32748 OR m.away_player_9=32748 OR m.away_player_10=32748 OR m.away_player_11=32748) AND (m.home_player_1=73999 OR m.home_player_2=73999 OR m.home_player_3=73999 OR m.home_player_4=73999 OR m.home_player_5=73999 OR m.home_player_6=73999 OR m.home_player_7=73999 OR m.home_player_8=73999 OR m.home_player_9=73999 OR m.home_player_10=73999 OR m.home_player_11=73999 OR m.away_player_1=73999 OR m.away_player_2=73999 OR m.away_player_3=73999 OR m.away_player_4=73999 OR m.away_player_5=73999 OR m.away_player_6=73999 OR m.away_player_7=73999 OR m.away_player_8=73999 OR m.away_player_9=73999 OR m.away_player_10=73999 OR m.away_player_11=73999);"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="data_manager_italy_serieA",
+      instruction="I am Francesca Russo, data manager for the Italy Serie A records. For player Emil Hallfredsson (player_api_id: 24516, player_fifa_api_id: 133249), please update his profile so his height is now 186 cm and his weight is 185 lbs, as confirmed on 2024-06-01.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height = 186, weight = 185 WHERE player_api_id = 24516 AND player_fifa_api_id = 133249;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="lucas.weber",
+      instruction="You are Lucas Weber, an accurate and detail-oriented football data analyst. You have just discovered that Marco Schoenbaechler's birthday in the Player table is incorrect and should be updated from '1990-01-11 00:00:00' to '1990-01-10 00:00:00' for player_api_id 78410. Additionally, you need to correct all occurrences in the Match table where Marco was a home player (i.e., in any home_player_X columns with value 78410), updating those entries to use the corrected player_api_id 78411 instead. Please execute both updates for accuracy.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET birthday = '1990-01-10 00:00:00' WHERE player_api_id = 78410;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_1 = 78411 WHERE home_player_1 = 78410;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_2 = 78411 WHERE home_player_2 = 78410;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_3 = 78411 WHERE home_player_3 = 78410;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_4 = 78411 WHERE home_player_4 = 78410;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_5 = 78411 WHERE home_player_5 = 78410;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_6 = 78411 WHERE home_player_6 = 78410;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_7 = 78411 WHERE home_player_7 = 78410;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_8 = 78411 WHERE home_player_8 = 78410;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_9 = 78411 WHERE home_player_9 = 78410;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_10 = 78411 WHERE home_player_10 = 78410;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_11 = 78411 WHERE home_player_11 = 78410;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="claire_belgium_league",
+      instruction="I am Claire, an analyst for the Belgium Jupiler League. Update the Player record for Kenny Steppe (player_api_id=36872) to set his weight to 159. After that, retrieve every match from the 2015/2016 season in which Kenny Steppe was the home team's starting goalkeeper (home_player_1=36872), returning the home_team_goal and away_team_goal for each relevant match. I require the parameters: player_api_id=36872 and weight=159 for the update, and season='2015/2016', home_player_1=36872 for the query.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET weight=159 WHERE player_api_id=36872;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT match_api_id, home_team_goal, away_team_goal FROM Match WHERE season='2015/2016' AND home_player_1=36872;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="admin-task",
+      instruction="I am an admin and need to delete player Gaizka Toquero (player_api_id=150832) from the Player table. Before removal, set home_player_1 to NULL in the Match table wherever home_player_1=150832. Confirm each step.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_1=NULL WHERE home_player_1=150832;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "DELETE FROM Player WHERE player_api_id=150832;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="210858",
+      instruction="My name is Greg Stewart and my player_api_id is 210858. I want to update my FIFA attributes for the date '2015-05-01' (date format YYYY-MM-DD) as follows: overall_rating to 81, potential to 85, preferred_foot to 'Right', attacking_work_rate to 'High', defensive_work_rate to 'Medium'. After updating, please show me all matches in the season '2015/2016' where I played (either home or away, any position).",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT * FROM Player WHERE player_name = 'Greg Stewart' AND player_api_id = 210858;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player_Attributes SET overall_rating = 81, potential = 85, preferred_foot = 'Right', attacking_work_rate = 'High', defensive_work_rate = 'Medium' WHERE player_api_id = 210858 AND date = '2015-05-01';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT match_api_id, season, date, home_team_api_id, away_team_api_id, home_player_1, home_player_2, home_player_3, home_player_4, home_player_5, home_player_6, home_player_7, home_player_8, home_player_9, home_player_10, home_player_11, away_player_1, away_player_2, away_player_3, away_player_4, away_player_5, away_player_6, away_player_7, away_player_8, away_player_9, away_player_10, away_player_11 FROM Match WHERE season = '2015/2016' AND (home_player_1 = 210858 OR home_player_2 = 210858 OR home_player_3 = 210858 OR home_player_4 = 210858 OR home_player_5 = 210858 OR home_player_6 = 210858 OR home_player_7 = 210858 OR home_player_8 = 210858 OR home_player_9 = 210858 OR home_player_10 = 210858 OR home_player_11 = 210858 OR away_player_1 = 210858 OR away_player_2 = 210858 OR away_player_3 = 210858 OR away_player_4 = 210858 OR away_player_5 = 210858 OR away_player_6 = 210858 OR away_player_7 = 210858 OR away_player_8 = 210858 OR away_player_9 = 210858 OR away_player_10 = 210858 OR away_player_11 = 210858);"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="player_manager_alex",
+      instruction="I'm Alex, the manager for Joao Barroca (player_api_id 181198). Joao just lost some weight during off-season training, and his new weight is now 177 pounds instead of 181. Please update his weight in the player database to 177. After updating, give me a list of all matches where Joao Barroca (player_api_id 181198) was one of the home or away players, along with each match's season and the teams involved.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET weight = 177 WHERE player_api_id = 181198;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT match_api_id, season, home_team_api_id, away_team_api_id FROM Match WHERE home_player_1 = 181198 OR home_player_2 = 181198 OR home_player_3 = 181198 OR home_player_4 = 181198 OR home_player_5 = 181198 OR home_player_6 = 181198 OR home_player_7 = 181198 OR home_player_8 = 181198 OR home_player_9 = 181198 OR home_player_10 = 181198 OR home_player_11 = 181198 OR away_player_1 = 181198 OR away_player_2 = 181198 OR away_player_3 = 181198 OR away_player_4 = 181198 OR away_player_5 = 181198 OR away_player_6 = 181198 OR away_player_7 = 181198 OR away_player_8 = 181198 OR away_player_9 = 181198 OR away_player_10 = 181198 OR away_player_11 = 181198;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="analyst_juan_dom_update_001",
+      instruction="You are a team analyst named Marta Sanz tasked with updating transfer records in your football database. Your goal is to reflect the mid-season transfer of player 'Juan Dominguez Lamas' (player_api_id=189178, player_fifa_api_id=193735) from team_api_id=9783 to team_api_id=11000 for all matches in the 2014/2015 season after 2014-12-31 in which he appeared for away_team_api_id=9783. Explicitly, you want to: 1) Confirm you are editing the correct player (player_api_id=189178), 2) Find all 'Match' entries in the 2014/2015 season where player_api_id=189178 played as part of away_team_api_id=9783 after 2014-12-31, and 3) Update those match records to assign away_team_api_id=11000, reflecting the transfer.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT * FROM Player WHERE player_api_id=189178;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT match_api_id FROM Match WHERE season='2014/2015' AND date > '2014-12-31' AND away_team_api_id=9783 AND (away_player_1=189178 OR away_player_2=189178 OR away_player_3=189178 OR away_player_4=189178 OR away_player_5=189178 OR away_player_6=189178 OR away_player_7=189178 OR away_player_8=189178 OR away_player_9=189178 OR away_player_10=189178 OR away_player_11=189178);"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_team_api_id=11000 WHERE season='2014/2015' AND date > '2014-12-31' AND away_team_api_id=9783 AND (away_player_1=189178 OR away_player_2=189178 OR away_player_3=189178 OR away_player_4=189178 OR away_player_5=189178 OR away_player_6=189178 OR away_player_7=189178 OR away_player_8=189178 OR away_player_9=189178 OR away_player_10=189178 OR away_player_11=189178);"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="manager1",
+      instruction="I am the manager for Genc Mehmeti. After reviewing footage and match records from his recent games, I can confirm his official height is now 180 and weight is 162. Please update the player record for Genc Mehmeti to set height = 180 and weight = 162. Make sure these new values are reflected in the database for player_api_id 42287.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height = 180, weight = 162 WHERE player_api_id = 42287;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="analyst_001",
+      instruction="You are a football analyst tasked with correcting player profile errors. Please update the 'weight' of player Paul Gallacher (player_api_id: 23141) from 174 to 178, and also update his 'height' from 182.88 to 183 in the Player table. After applying both changes, retrieve and display his full updated profile to verify the modifications.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET weight = 178 WHERE player_api_id = 23141;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height = 183 WHERE player_api_id = 23141;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT * FROM Player WHERE player_api_id = 23141;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="analyst_01",
+      instruction="You are a club data analyst. You need to correct the height and weight for player Wilfried Zaha (player_api_id=198510) to 183.00 cm and 150 lbs. Afterwards, retrieve the match_api_id, date, and home_team_goal for the last 2 matches where Wilfried Zaha (player_api_id=198510) was in the starting 11 (home_player_1-11 or away_player_1-11) and played as a home player.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height=183.00, weight=150 WHERE player_api_id=198510;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT match_api_id, date, home_team_goal FROM Match WHERE (home_player_1=198510 OR home_player_2=198510 OR home_player_3=198510 OR home_player_4=198510 OR home_player_5=198510 OR home_player_6=198510 OR home_player_7=198510 OR home_player_8=198510 OR home_player_9=198510 OR home_player_10=198510 OR home_player_11=198510) ORDER BY date DESC LIMIT 2;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="user_7589",
+      instruction="I am a data manager for the league database. I need to update the details of player with player_api_id 209380 (Kaj Ramsteijn): please change the birthday to '1990-01-17 12:00:00' and set the weight to 190. After making these changes, show me Kaj Ramsteijn's full player record to confirm the updates.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT * FROM Player WHERE player_api_id = 209380"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET birthday = '1990-01-17 12:00:00', weight = 190 WHERE player_api_id = 209380"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT * FROM Player WHERE player_api_id = 209380"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="ana_martins",
+      instruction="You are Ana Martins, assistant coach. For player_api_id 145020, update their Player_Attributes (date='2011-06-01 00:00:00') to overall_rating 77 and attacking_work_rate 'High'. Afterwards, list all matches in season '2011/2012' where this player appears in any home_player_N position (1-11), returning match_api_id and date for each.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player_Attributes SET overall_rating=77, attacking_work_rate='High' WHERE player_api_id=145020 AND date='2011-06-01 00:00:00';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT match_api_id, date FROM Match WHERE season='2011/2012' AND (home_player_1=145020 OR home_player_2=145020 OR home_player_3=145020 OR home_player_4=145020 OR home_player_5=145020 OR home_player_6=145020 OR home_player_7=145020 OR home_player_8=145020 OR home_player_9=145020 OR home_player_10=145020 OR home_player_11=145020);"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="analyst_team_db_admin",
+      instruction="I am a team analyst and noticed a recurring mistake in the match records. For player Pedro Leon (player_api_id 75192), please reassign him from position home_player_8 to home_player_3 in all Match records where he currently appears as home_player_8. Leave home_player_8 empty (NULL) for those updated records.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_3 = 75192, home_player_8 = NULL WHERE home_player_8 = 75192"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="data_analyst_verona_fc",
+      instruction="As the data analyst for Verona FC, I have confirmed new biographical details for Luca Toni (player_api_id: 30709): his official height is 194 cm and his weight is 200 lbs. Please update these values in the Player table where player_api_id = 30709. After this correction, list all matches from the 2014/2015 season in Italy Serie A (league_id: 10257, season: '2014/2015') where Luca Toni (player_api_id: 30709) participated as either a home or away player. For each match, provide the match_api_id, indicate whether he was a home or away player, and specify the opponent team_api_id.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height = 194, weight = 200 WHERE player_api_id = 30709;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT match_api_id, CASE WHEN home_player_1 = 30709 OR home_player_2 = 30709 OR home_player_3 = 30709 OR home_player_4 = 30709 OR home_player_5 = 30709 OR home_player_6 = 30709 OR home_player_7 = 30709 OR home_player_8 = 30709 OR home_player_9 = 30709 OR home_player_10 = 30709 OR home_player_11 = 30709 THEN 'home' WHEN away_player_1 = 30709 OR away_player_2 = 30709 OR away_player_3 = 30709 OR away_player_4 = 30709 OR away_player_5 = 30709 OR away_player_6 = 30709 OR away_player_7 = 30709 OR away_player_8 = 30709 OR away_player_9 = 30709 OR away_player_10 = 30709 OR away_player_11 = 30709 THEN 'away' END AS player_side, CASE WHEN home_player_1 = 30709 OR home_player_2 = 30709 OR home_player_3 = 30709 OR home_player_4 = 30709 OR home_player_5 = 30709 OR home_player_6 = 30709 OR home_player_7 = 30709 OR home_player_8 = 30709 OR home_player_9 = 30709 OR home_player_10 = 30709 OR home_player_11 = 30709 THEN away_team_api_id ELSE home_team_api_id END AS opponent_team_api_id FROM Match WHERE season = '2014/2015' AND league_id = 10257 AND (home_player_1 = 30709 OR home_player_2 = 30709 OR home_player_3 = 30709 OR home_player_4 = 30709 OR home_player_5 = 30709 OR home_player_6 = 30709 OR home_player_7 = 30709 OR home_player_8 = 30709 OR home_player_9 = 30709 OR home_player_10 = 30709 OR home_player_11 = 30709 OR away_player_1 = 30709 OR away_player_2 = 30709 OR away_player_3 = 30709 OR away_player_4 = 30709 OR away_player_5 = 30709 OR away_player_6 = 30709 OR away_player_7 = 30709 OR away_player_8 = 30709 OR away_player_9 = 30709 OR away_player_10 = 30709 OR away_player_11 = 30709);"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="data_corrector",
+      instruction="You are updating football data records for accuracy. Update Florin Andone (player_api_id 599425, player_fifa_api_id 225018) to height 180 and weight 168. Then, for match with match_api_id 1778246, set Florin Andone as the home_player_1. Apply both corrections.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height=180, weight=168 WHERE player_api_id=599425 AND player_fifa_api_id=225018;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_1=599425 WHERE match_api_id=1778246;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="player_api_id: 39890, player_fifa_api_id: 155841",
+      instruction="I'm the records manager for player Mark Volders (player_api_id: 39890, player_fifa_api_id: 155841). Please update his birthday in the Player table to '1977-05-01 00:00:00' as there was an input error. Also, in the Match table, for match_api_id 493016, remove Mark as the home team's goalkeeper by setting home_player_1 to NULL (currently home_player_1 = 39890 in that match).",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET birthday = '1977-05-01 00:00:00' WHERE player_api_id = 39890 AND player_fifa_api_id = 155841;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_1 = NULL WHERE match_api_id = 493016 AND home_player_1 = 39890;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="data_manager_01",
+      instruction="I need to correct the records for Bruno Cesar. First, verify that Bruno Cesar (player_name='Bruno Cesar') with player_api_id exists in at least one match during the 2014/2015 season, as home or away player. If he does, update his height in the Player table to 178 (player_api_id must match). Also, set his overall_rating to 75 for all Player_Attributes rows with player_api_id matching Bruno Cesar and date on or after '2014-01-01'.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT player_api_id FROM Player WHERE player_name = 'Bruno Cesar';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT COUNT(*) FROM Match WHERE season = '2014/2015' AND (home_player_1 = 172888 OR home_player_2 = 172888 OR home_player_3 = 172888 OR home_player_4 = 172888 OR home_player_5 = 172888 OR home_player_6 = 172888 OR home_player_7 = 172888 OR home_player_8 = 172888 OR home_player_9 = 172888 OR home_player_10 = 172888 OR home_player_11 = 172888 OR away_player_1 = 172888 OR away_player_2 = 172888 OR away_player_3 = 172888 OR away_player_4 = 172888 OR away_player_5 = 172888 OR away_player_6 = 172888 OR away_player_7 = 172888 OR away_player_8 = 172888 OR away_player_9 = 172888 OR away_player_10 = 172888 OR away_player_11 = 172888);"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height = 178 WHERE player_api_id = 172888;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player_Attributes SET overall_rating = 75 WHERE player_api_id = 172888 AND date >= '2014-01-01';"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="analyst_falex",
+      instruction="You are Alex Thompson, a football data analyst. You discovered that in the Match table, for every match where player_api_id=150024 (Fernando Alexandre) appears as home_player_7 or away_player_7, his jersey number was mistakenly entered as 8. It should be 6. Please: 1) Confirm how many matches in total will be updated in the Match table (rows where home_player_7=150024 or away_player_7=150024); 2) Update the Match table so that for these rows, the value of home_player_Y7 or away_player_Y7 is set to 6 (where appropriate), with the parameter player_api_id=150024, and the corrected jersey number=6.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT COUNT(*) FROM Match WHERE home_player_7=150024 OR away_player_7=150024;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_Y7=6 WHERE home_player_7=150024;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_Y7=6 WHERE away_player_7=150024;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="admin",
+      instruction="I am compiling detailed updated stats for my favorite player, Miguel Fidalgo (player_api_id: 11840), for my blog. Please update his weight to 162 in the Player table, citing new reports. Next, retrieve all matches from the Match table where he played (as home or away player, using player_api_id: 11840) in seasons '2008/2009', '2009/2010', '2010/2011', '2011/2012', or '2012/2013'. For each match, give the match_api_id, date, role (home/away), his team's team_api_id, home_team_goal, away_team_goal, and opponent team_api_id.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET weight = 162 WHERE player_api_id = 11840;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT match_api_id, date, home_team_api_id, away_team_api_id, home_team_goal, away_team_goal, 'home' AS role FROM Match WHERE season IN ('2008/2009','2009/2010','2010/2011','2011/2012','2012/2013') AND (home_player_1=11840 OR home_player_2=11840 OR home_player_3=11840 OR home_player_4=11840 OR home_player_5=11840 OR home_player_6=11840 OR home_player_7=11840 OR home_player_8=11840 OR home_player_9=11840 OR home_player_10=11840 OR home_player_11=11840)"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT match_api_id, date, home_team_api_id, away_team_api_id, home_team_goal, away_team_goal, 'away' AS role FROM Match WHERE season IN ('2008/2009','2009/2010','2010/2011','2011/2012','2012/2013') AND (away_player_1=11840 OR away_player_2=11840 OR away_player_3=11840 OR away_player_4=11840 OR away_player_5=11840 OR away_player_6=11840 OR away_player_7=11840 OR away_player_8=11840 OR away_player_9=11840 OR away_player_10=11840 OR away_player_11=11840)"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="data_curator_olivia",
+      instruction="I am Olivia Janssen. Please verify if player Kevin Jansen (player_api_id=279107) played for the home team (team_api_id=10217) in the match with match_api_id=1983522 in the 2015/2016 Eredivisie season, on 2016-03-20. If yes, update his height to 179 and weight to 172 in the Player table.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT * FROM Match WHERE match_api_id=1983522 AND season='2015/2016' AND home_team_api_id=10217 AND (home_player_1=279107 OR home_player_2=279107 OR home_player_3=279107 OR home_player_4=279107 OR home_player_5=279107 OR home_player_6=279107 OR home_player_7=279107 OR home_player_8=279107 OR home_player_9=279107 OR home_player_10=279107 OR home_player_11=279107);"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height=179, weight=172 WHERE player_api_id=279107;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="requestor_123",
+      instruction="Hi, I'm doing a cleanup of our player database. I found that the name of the player with player_api_id 24575, birthday '1979-05-29 00:00:00', and height 177.8 is currently set as 'Andy Kirk', but his full name should be 'Andrew Kirk'. Please first confirm that the player record exists with the given player_api_id, birthday, and height, then update the player_name to 'Andrew Kirk' for that player.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT * FROM Player WHERE player_api_id = 24575 AND birthday = '1979-05-29 00:00:00' AND height = 177.8;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET player_name = 'Andrew Kirk' WHERE player_api_id = 24575 AND birthday = '1979-05-29 00:00:00' AND height = 177.8;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="lucy_evans",
+      instruction="My name is Lucy Evans and I'm compiling statistics for sports media. Please provide: 1) The full profile for 'Stefan Nater' including birthday, height, and weight; 2) For every match he played in, provide the match_api_id, date, home_team_api_id, away_team_api_id, home_team_goal, and away_team_goal. His player_name is 'Stefan Nater', so please use that for identification.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT player_api_id, birthday, height, weight FROM Player WHERE player_name = 'Stefan Nater';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT match_api_id, date, home_team_api_id, away_team_api_id, home_team_goal, away_team_goal FROM Match WHERE (home_player_1 = 8784 OR home_player_2 = 8784 OR home_player_3 = 8784 OR home_player_4 = 8784 OR home_player_5 = 8784 OR home_player_6 = 8784 OR home_player_7 = 8784 OR home_player_8 = 8784 OR home_player_9 = 8784 OR home_player_10 = 8784 OR home_player_11 = 8784 OR away_player_1 = 8784 OR away_player_2 = 8784 OR away_player_3 = 8784 OR away_player_4 = 8784 OR away_player_5 = 8784 OR away_player_6 = 8784 OR away_player_7 = 8784 OR away_player_8 = 8784 OR away_player_9 = 8784 OR away_player_10 = 8784 OR away_player_11 = 8784);"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="coach_lvitale_2024",
+      instruction="You are Luca Vitale, an analytical football coach. After Giacomo Bonaventura (player_api_id: 127460, player_fifa_api_id: 189125) scored 2 goals in match_api_id 1287227 (away match, season '2012/2013', against team 8551, date '2013-03-03 00:00:00'), update his Player_Attributes for date '2013-03-03 00:00:00': set overall_rating to 82, finishing to 85, positioning to 84. Then, retrieve and show his overall_rating, finishing, positioning, and potential for that date.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player_Attributes SET overall_rating=82, finishing=85, positioning=84 WHERE player_fifa_api_id=189125 AND player_api_id=127460 AND date='2013-03-03 00:00:00';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT overall_rating, finishing, positioning, potential FROM Player_Attributes WHERE player_fifa_api_id=189125 AND player_api_id=127460 AND date='2013-03-03 00:00:00';"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="data_manager_001",
+      instruction="You are the club's data manager. You need to retire player Olivier Sorin (player_api_id=26241, player_name='Olivier Sorin'). First, update his birthday to his retirement date '2012-01-15 00:00:00' in the Player table (player_api_id=26241). Next, for all matches after '2012-01-01', find all records in the Match table where player_api_id=26241 appears in any home_player_N or away_player_N field, and set those specific fields to NULL. The Player table must be updated first, then all relevant matches modified.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET birthday = '2012-01-15 00:00:00' WHERE player_api_id = 26241;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_1 = NULL WHERE home_player_1 = 26241 AND date > '2012-01-01';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_2 = NULL WHERE home_player_2 = 26241 AND date > '2012-01-01';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_3 = NULL WHERE home_player_3 = 26241 AND date > '2012-01-01';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_4 = NULL WHERE home_player_4 = 26241 AND date > '2012-01-01';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_5 = NULL WHERE home_player_5 = 26241 AND date > '2012-01-01';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_6 = NULL WHERE home_player_6 = 26241 AND date > '2012-01-01';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_7 = NULL WHERE home_player_7 = 26241 AND date > '2012-01-01';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_8 = NULL WHERE home_player_8 = 26241 AND date > '2012-01-01';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_9 = NULL WHERE home_player_9 = 26241 AND date > '2012-01-01';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_10 = NULL WHERE home_player_10 = 26241 AND date > '2012-01-01';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_11 = NULL WHERE home_player_11 = 26241 AND date > '2012-01-01';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_1 = NULL WHERE away_player_1 = 26241 AND date > '2012-01-01';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_2 = NULL WHERE away_player_2 = 26241 AND date > '2012-01-01';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_3 = NULL WHERE away_player_3 = 26241 AND date > '2012-01-01';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_4 = NULL WHERE away_player_4 = 26241 AND date > '2012-01-01';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_5 = NULL WHERE away_player_5 = 26241 AND date > '2012-01-01';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_6 = NULL WHERE away_player_6 = 26241 AND date > '2012-01-01';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_7 = NULL WHERE away_player_7 = 26241 AND date > '2012-01-01';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_8 = NULL WHERE away_player_8 = 26241 AND date > '2012-01-01';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_9 = NULL WHERE away_player_9 = 26241 AND date > '2012-01-01';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_10 = NULL WHERE away_player_10 = 26241 AND date > '2012-01-01';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_11 = NULL WHERE away_player_11 = 26241 AND date > '2012-01-01';"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="club_manager",
+      instruction="You are a club manager and wish to permanently remove Tomas Rosicky (player_api_id=31435) from all club and league data. This includes deleting all of his individual player attribute records, removing him from any match squad appearances (set to NULL wherever his player_api_id appears in home_player_1 to home_player_11 or away_player_1 to away_player_11 in the Match table), and finally deleting his basic player info from the Player table. Execute all necessary modifications, ensuring player_api_id=31435 is fully erased from all records.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "DELETE FROM Player_Attributes WHERE player_api_id=31435;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_1=NULL WHERE home_player_1=31435;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_2=NULL WHERE home_player_2=31435;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_3=NULL WHERE home_player_3=31435;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_4=NULL WHERE home_player_4=31435;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_5=NULL WHERE home_player_5=31435;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_6=NULL WHERE home_player_6=31435;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_7=NULL WHERE home_player_7=31435;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_8=NULL WHERE home_player_8=31435;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_9=NULL WHERE home_player_9=31435;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_10=NULL WHERE home_player_10=31435;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_11=NULL WHERE home_player_11=31435;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_1=NULL WHERE away_player_1=31435;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_2=NULL WHERE away_player_2=31435;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_3=NULL WHERE away_player_3=31435;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_4=NULL WHERE away_player_4=31435;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_5=NULL WHERE away_player_5=31435;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_6=NULL WHERE away_player_6=31435;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_7=NULL WHERE away_player_7=31435;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_8=NULL WHERE away_player_8=31435;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_9=NULL WHERE away_player_9=31435;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_10=NULL WHERE away_player_10=31435;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_11=NULL WHERE away_player_11=31435;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "DELETE FROM Player WHERE player_api_id=31435;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="admin_assistant_italy_serie_a",
+      instruction="For compliance, anonymize the data of Marco Pisano. In the Player table, set player_name to 'Anonymous' and birthday to '1900-01-01 00:00:00' where player_api_id = 33413 and player_fifa_api_id = 102081. In the Match table, set any column among home_player_1 to home_player_11 or away_player_1 to away_player_11 to NULL if the value is 33413.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET player_name = 'Anonymous', birthday = '1900-01-01 00:00:00' WHERE player_api_id = 33413 AND player_fifa_api_id = 102081;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_1 = NULL WHERE home_player_1 = 33413;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_2 = NULL WHERE home_player_2 = 33413;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_3 = NULL WHERE home_player_3 = 33413;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_4 = NULL WHERE home_player_4 = 33413;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_5 = NULL WHERE home_player_5 = 33413;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_6 = NULL WHERE home_player_6 = 33413;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_7 = NULL WHERE home_player_7 = 33413;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_8 = NULL WHERE home_player_8 = 33413;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_9 = NULL WHERE home_player_9 = 33413;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_10 = NULL WHERE home_player_10 = 33413;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_11 = NULL WHERE home_player_11 = 33413;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_1 = NULL WHERE away_player_1 = 33413;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_2 = NULL WHERE away_player_2 = 33413;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_3 = NULL WHERE away_player_3 = 33413;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_4 = NULL WHERE away_player_4 = 33413;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_5 = NULL WHERE away_player_5 = 33413;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_6 = NULL WHERE away_player_6 = 33413;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_7 = NULL WHERE away_player_7 = 33413;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_8 = NULL WHERE away_player_8 = 33413;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_9 = NULL WHERE away_player_9 = 33413;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_10 = NULL WHERE away_player_10 = 33413;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_11 = NULL WHERE away_player_11 = 33413;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="admin",
+      instruction="You are a club administrator. Please update Jakub Swierczok (player_api_id=281158) in the Player table: set his height to 180 and his weight to 168, as there was a measurement error.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT * FROM Player WHERE player_api_id=281158;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height=180, weight=168 WHERE player_api_id=281158;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="official_data_manager",
+      instruction="As the official data manager, I need to update the record for the player Andre Andre with player_api_id 164333. His current physical data is outdated. Please update his height to 178 and weight to 145 in the Player table.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height = 178, weight = 145 WHERE player_api_id = 164333;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="admin_england_epl",
+      instruction="As the data manager for the England Premier League database, I need to anonymize the personal information of the player Bernard Mendy. Please update his player record where player_api_id = 32577 so that his player_name is changed to 'Anonymous Player' and his birthday is changed to '1900-01-01 00:00:00'. Additionally, for all matches in the Match table, if home_player_2 or away_player_2 is 32577, update those fields to 0 to ensure he is not directly referenced by his original ID in any match lineups.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET player_name = 'Anonymous Player', birthday = '1900-01-01 00:00:00' WHERE player_api_id = 32577;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_2 = 0 WHERE home_player_2 = 32577;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_2 = 0 WHERE away_player_2 = 32577;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="team_mgr_1223",
+      instruction="I am the manager for home team in match_api_id 838514 (date: 2010-10-30). Our center back, player_api_id 68732, got injured and cannot play. Please replace him in the lineup (home_player_3) with player_api_id 488960 for this match. Confirm after updating.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_3 = 488960 WHERE match_api_id = 838514 AND home_player_3 = 68732;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="Isabella Ricci",
+      instruction="You are Isabella Ricci, a sports analyst. You have found corrected demographic data for Mauro Zarate (player name: Mauro Zarate). Update his birthday to '1987-03-19 00:00:00' and his weight to 166. After updating, list for each season how many matches he played as home_player_1 or away_player_1.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT player_api_id FROM Player WHERE player_name = 'Mauro Zarate';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET birthday = '1987-03-19 00:00:00', weight = 166 WHERE player_api_id = 18506;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT season, COUNT(*) AS match_count FROM Match WHERE home_player_1 = 18506 OR away_player_1 = 18506 GROUP BY season;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="lucas.almeida12@domain.com",
+      instruction="I am Lucas Almeida, data analyst (lucas.almeida12@domain.com). Please retire the player Diego Ifran, whose details are: player_api_id: 99054, player_fifa_api_id: 200853, player_name: 'Diego Ifran', birthday: '1987-06-08 00:00:00', height: 175.26, weight: 168. Remove him completely from the Player table and update all Match records where he appears as any home_player_N or away_player_N by setting those slots to NULL (for each N from 1 to 11).",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "DELETE FROM Player WHERE player_api_id = 99054 AND player_fifa_api_id = 200853 AND player_name = 'Diego Ifran' AND birthday = '1987-06-08 00:00:00' AND height = 175.26 AND weight = 168;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_1 = NULL WHERE home_player_1 = 99054;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_2 = NULL WHERE home_player_2 = 99054;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_3 = NULL WHERE home_player_3 = 99054;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_4 = NULL WHERE home_player_4 = 99054;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_5 = NULL WHERE home_player_5 = 99054;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_6 = NULL WHERE home_player_6 = 99054;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_7 = NULL WHERE home_player_7 = 99054;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_8 = NULL WHERE home_player_8 = 99054;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_9 = NULL WHERE home_player_9 = 99054;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_10 = NULL WHERE home_player_10 = 99054;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_11 = NULL WHERE home_player_11 = 99054;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_1 = NULL WHERE away_player_1 = 99054;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_2 = NULL WHERE away_player_2 = 99054;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_3 = NULL WHERE away_player_3 = 99054;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_4 = NULL WHERE away_player_4 = 99054;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_5 = NULL WHERE away_player_5 = 99054;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_6 = NULL WHERE away_player_6 = 99054;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_7 = NULL WHERE away_player_7 = 99054;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_8 = NULL WHERE away_player_8 = 99054;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_9 = NULL WHERE away_player_9 = 99054;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_10 = NULL WHERE away_player_10 = 99054;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_11 = NULL WHERE away_player_11 = 99054;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="analyst_24",
+      instruction="You are data analyst (user_id: analyst_24) preparing a privacy-compliant match report for the 2009/2010 season. You need to anonymize the player with player_api_id 17312 by updating their name to 'Anonymous', but ONLY if this player appears in any matches as a participant (either home or away) in the 2009/2010 season. Please execute this update for player_api_id 17312 based on their appearances in matches of season '2009/2010'.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET player_name = 'Anonymous' WHERE player_api_id = 17312 AND EXISTS (SELECT 1 FROM Match WHERE season = '2009/2010' AND (home_player_1 = 17312 OR home_player_2 = 17312 OR home_player_3 = 17312 OR home_player_4 = 17312 OR home_player_5 = 17312 OR home_player_6 = 17312 OR home_player_7 = 17312 OR home_player_8 = 17312 OR home_player_9 = 17312 OR home_player_10 = 17312 OR home_player_11 = 17312 OR away_player_1 = 17312 OR away_player_2 = 17312 OR away_player_3 = 17312 OR away_player_4 = 17312 OR away_player_5 = 17312 OR away_player_6 = 17312 OR away_player_7 = 17312 OR away_player_8 = 17312 OR away_player_9 = 17312 OR away_player_10 = 17312 OR away_player_11 = 17312))"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="james.franklin.data.analyst",
+      instruction="You are James Franklin. Update the Player record for Fabrizio Miccoli (player_api_id: 32747, player_fifa_api_id: 53116), changing his height from 167.64 to 165. Then, retrieve all matches in which Fabrizio Miccoli (player_api_id: 32747) appeared as any home or away player, returning for each match: match_api_id, date, home_team_api_id, away_team_api_id, home_team_goal, away_team_goal.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET height=165 WHERE player_api_id=32747 AND player_fifa_api_id=53116;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "SELECT match_api_id, date, home_team_api_id, away_team_api_id, home_team_goal, away_team_goal FROM Match WHERE home_player_1=32747 OR home_player_2=32747 OR home_player_3=32747 OR home_player_4=32747 OR home_player_5=32747 OR home_player_6=32747 OR home_player_7=32747 OR home_player_8=32747 OR home_player_9=32747 OR home_player_10=32747 OR home_player_11=32747 OR away_player_1=32747 OR away_player_2=32747 OR away_player_3=32747 OR away_player_4=32747 OR away_player_5=32747 OR away_player_6=32747 OR away_player_7=32747 OR away_player_8=32747 OR away_player_9=32747 OR away_player_10=32747 OR away_player_11=32747;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="player_update_batch_removal",
+      instruction="I want to update Ruben Ligeon (player_api_id 257828) birthday to '1992-05-20', and also remove him from all matches scheduled after '2012-01-01' by setting any match player slots containing player_api_id 257828 to NULL in both home and away player positions.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET birthday = '1992-05-20' WHERE player_api_id = 257828;"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_1 = NULL WHERE home_player_1 = 257828 AND date > '2012-01-01';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_2 = NULL WHERE home_player_2 = 257828 AND date > '2012-01-01';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_3 = NULL WHERE home_player_3 = 257828 AND date > '2012-01-01';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_4 = NULL WHERE home_player_4 = 257828 AND date > '2012-01-01';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_5 = NULL WHERE home_player_5 = 257828 AND date > '2012-01-01';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_6 = NULL WHERE home_player_6 = 257828 AND date > '2012-01-01';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_7 = NULL WHERE home_player_7 = 257828 AND date > '2012-01-01';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_8 = NULL WHERE home_player_8 = 257828 AND date > '2012-01-01';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_9 = NULL WHERE home_player_9 = 257828 AND date > '2012-01-01';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_10 = NULL WHERE home_player_10 = 257828 AND date > '2012-01-01';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET home_player_11 = NULL WHERE home_player_11 = 257828 AND date > '2012-01-01';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_1 = NULL WHERE away_player_1 = 257828 AND date > '2012-01-01';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_2 = NULL WHERE away_player_2 = 257828 AND date > '2012-01-01';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_3 = NULL WHERE away_player_3 = 257828 AND date > '2012-01-01';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_4 = NULL WHERE away_player_4 = 257828 AND date > '2012-01-01';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_5 = NULL WHERE away_player_5 = 257828 AND date > '2012-01-01';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_6 = NULL WHERE away_player_6 = 257828 AND date > '2012-01-01';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_7 = NULL WHERE away_player_7 = 257828 AND date > '2012-01-01';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_8 = NULL WHERE away_player_8 = 257828 AND date > '2012-01-01';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_9 = NULL WHERE away_player_9 = 257828 AND date > '2012-01-01';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_10 = NULL WHERE away_player_10 = 257828 AND date > '2012-01-01';"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Match SET away_player_11 = NULL WHERE away_player_11 = 257828 AND date > '2012-01-01';"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+   Task(
+      user_id="analyst",
+      instruction="I'm an analyst entering records for the upcoming season. Please add a new match for the 2016/2017 season, stage 1, on 2016-08-13 (match_api_id: 2999999). The home team (team_api_id 8197) fields these players: 37770, 49571, 38899, 23571, 139671, 214570, 278343, 173317, 23190, 286119, 26554. The away team (team_api_id 8586) fields: 26295, 159833, 160599, 37762, 276121, 160448, 361315, 41008, 174850, 110189, 194165. Final score: home 2, away 1. League and country IDs are both 1729. Immediately after, update Jamie Vardy’s (player_api_id 286119) weight to 163.",
+       actions=[
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "INSERT INTO Match (country_id, league_id, season, stage, date, match_api_id, home_team_api_id, away_team_api_id, home_team_goal, away_team_goal, home_player_1, home_player_2, home_player_3, home_player_4, home_player_5, home_player_6, home_player_7, home_player_8, home_player_9, home_player_10, home_player_11, away_player_1, away_player_2, away_player_3, away_player_4, away_player_5, away_player_6, away_player_7, away_player_8, away_player_9, away_player_10, away_player_11) VALUES (1729, 1729, '2016/2017', 1, '2016-08-13 00:00:00', 2999999, 8197, 8586, 2, 1, 37770, 49571, 38899, 23571, 139671, 214570, 278343, 173317, 23190, 286119, 26554, 26295, 159833, 160599, 37762, 276121, 160448, 361315, 41008, 174850, 110189, 194165);"
+               }
+            ),
+            Action(
+               name="sql",
+               kwargs={
+               "sql": "UPDATE Player SET weight = 163 WHERE player_api_id = 286119;"
+               }
+            ),
+       ],
+       outputs=[]
+   ),
+]

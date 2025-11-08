@@ -2,8 +2,8 @@
 
 import abc
 from typing import Optional
-from tau_bench.envs.base import Env
-from tau_bench.types import SolveResult
+from dysql_bench.envs.base import Env
+from dysql_bench.types import SolveResult
 
 
 class Agent(abc.ABC):

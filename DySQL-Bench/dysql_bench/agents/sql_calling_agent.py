@@ -7,9 +7,9 @@ import requests
 from transformers import AutoTokenizer
 from typing import List, Optional, Dict, Any
 
-from tau_bench.agents.base import Agent
-from tau_bench.envs.base import Env
-from tau_bench.types import SolveResult, Action, RESPOND_ACTION_NAME, SQL_ACTION_NAME
+from dysql_bench.agents.base import Agent
+from dysql_bench.envs.base import Env
+from dysql_bench.types import SolveResult, Action, RESPOND_ACTION_NAME, SQL_ACTION_NAME
 
 
 class SQLCallingAgent(Agent):
@@ -18,18 +18,21 @@ class SQLCallingAgent(Agent):
         api: str,
         wiki: str,
         model: str,
-        tokenizer: str = None,
-        temperature: float = 0.0,
-        
+        temperature: float = 0.6,
+        max_tokens: int = 8192,
+        top_p: float = 0.95,
+        top_k: int = 20,
+        min_p: float = 0.0,
     ):
         self.wiki = wiki
         self.model = model
         self.temperature = temperature
         self.api = api
-        if tokenizer is not None:
-            self.tokenizer = AutoTokenizer.from_pretrained(tokenizer)
-        else:
-            self.tokenizer = AutoTokenizer.from_pretrained(model)   # 用的和模型相同的tokenizer
+        self.max_tokens = max_tokens
+        self.top_p = top_p
+        self.top_k = top_k
+        self.min_p = min_p
+
     def solve(
         self, env: Env, task_index: Optional[int] = None, max_num_steps: int = 30
     ) -> SolveResult:
@@ -43,44 +46,27 @@ class SQLCallingAgent(Agent):
             {"role": "user", "content": obs},
         ]
         for _ in range(max_num_steps):
-             # apply chat template
-            input_text = self.tokenizer.apply_chat_template(        # 模型是可以看到完整上下文的, 包括报错
-                messages,
-                tokenize=False,
-                add_generation_prompt=True,
-                enable_thinking=False  
-            )
 
             response = requests.post(
-                self.api + "/generate", 
+                self.api + "/v1/chat/completions", 
                 headers={"Content-Type": "application/json"}, 
                 json={
-                    "text": input_text,
-                    "sampling_params": {
-                        "max_new_tokens": 8192,
-                        "temperature": 0.6,
-                        "top_p": 0.95,
-                        "top_k": 20,
-                        "min_p": 0.0,
-                    }
+                    "messages": messages,
+                    "max_tokens": self.max_tokens,
+                    "temperature": self.temperature,
+                    "top_p": self.top_p,
+                    "top_k": self.top_k,
+                    "min_p": self.min_p,
                 }
             ).json()
             
-            # extract content from response
-            # print("------------------------")
-            # print("response.keys(): ", response.keys())
-            # if "error" in response:
-            #     print("Error in response: ", response['error'])
-            # print("------------------------")
-            next_message = self.parse_response(response['text'])
+            next_message = self.parse_response(response['choices'][0]['message']['content'])
 
-            action = message_to_action(next_message)    # 这里的action中的每个sql可能是一个大sql
-            env_response = env.step(action)             # 是一个EnvResponse对象
+            action = message_to_action(next_message)    
+            env_response = env.step(action)             
             reward = env_response.reward
             info = {**info, **env_response.info.model_dump()}
             if action.name != RESPOND_ACTION_NAME:
-                #print("next_message: ", next_message)
-                #next_message["tool_calls"] = next_message["tool_calls"][:1]
                 messages.extend(
                     [
                         next_message,
@@ -104,7 +90,6 @@ class SQLCallingAgent(Agent):
             reward=reward,
             info=info,
             messages=messages,
-            #total_cost=total_cost,
         )
     
     def parse_response(self, text):
@@ -113,7 +98,6 @@ class SQLCallingAgent(Agent):
         think_match = re.search(think_pattern, text, re.DOTALL)
         reasoning_content = think_match.group(1).strip() if think_match else None
 
-        # 移除所有标签内容(除了)，获取剩余文本
         clean_text = text
         clean_text = re.sub(think_pattern, '', clean_text, flags=re.DOTALL)
         content = clean_text.strip()
@@ -131,7 +115,7 @@ def message_to_action(
 
     if "```sql" in message["content"]:
         sql_pattern = r"```sql(.*?)```"
-        matches = re.findall(sql_pattern, message["content"], re.DOTALL)[0]     # 如果有多个sql调用, 只保留第一个
+        matches = re.findall(sql_pattern, message["content"], re.DOTALL)[0]
         return Action(name=SQL_ACTION_NAME, kwargs={"content": message["content"], "sql": matches})
     else:
         return Action(name=RESPOND_ACTION_NAME, kwargs={"content": message["content"]})

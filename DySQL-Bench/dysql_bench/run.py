@@ -8,23 +8,21 @@ import threading
 import traceback
 from math import comb
 from tqdm import tqdm
-import multiprocessing
-from typing import List, Dict, Any
+from typing import List
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor
 
-from tau_bench.envs import get_env
-from tau_bench.agents.base import Agent
-from tau_bench.types import EnvRunResult, RunConfig
-#from litellm import provider_list
-from tau_bench.envs.user import UserStrategy
+from dysql_bench.envs import get_env
+from dysql_bench.agents.base import Agent
+from dysql_bench.types import EnvRunResult, RunConfig
+from dysql_bench.envs.user import UserStrategy
 
 MAX_NUM_STEPS = 30
 
 def run(config: RunConfig) -> List[EnvRunResult]:
-    assert config.env in ["retail", "airline", "eu_soccer", "music", "bowling", "entertainment", "pagila", "chinook", "car", "cookbook", "disney", "human_resources", "ice_hockey", "law_episode", "retail_world", "social_media"], "Only retail, airline, eu_soccer, music, bowling, entertainment, pagila, chinook, car, cookbook, disney, human_resources, ice_hockey, law_episode, retail_world and social_media envs are supported"
-    assert config.agent_strategy in ["tool-calling", "act", "react", "few-shot", "sql"], "Invalid agent strategy"
-    assert config.task_split in ["train", "test", "dev"], "Invalid task split"
+    assert config.env in ["retail", "eu_soccer", "music", "bowling", "entertainment", "pagila", "chinook", "car", "cookbook", "human_resources", "ice_hockey", "law_episode", "retail_world"], f"Only retail, eu_soccer, music, bowling, entertainment, pagila, chinook, car, cookbook, human_resources, ice_hockey, law_episode, retail_world envs are supported"
+    assert config.agent_strategy in ["sql"], "Invalid agent strategy"  # TODO: add other agent strategies in the future
+    assert config.task_split in ["test"], "Invalid task split"   # TODO: add other task splits in the future
     assert config.user_strategy in [item.value for item in UserStrategy], "Invalid user strategy"
 
     random.seed(config.seed)
@@ -33,15 +31,9 @@ def run(config: RunConfig) -> List[EnvRunResult]:
     if not os.path.exists(config.log_dir):
         os.makedirs(config.log_dir)
 
-    # # 判断处理数据库是用sql还是用tool
-    # if config.agent_strategy == "sql":
-    #     use_sql = True
-    # else:
-    #     use_sql = False
-
     print(f"Loading user with strategy: {config.user_strategy}")
-    env = get_env(              # mock一个环境, 初始化数据, 调用接口(user_strategy), 用户模型. 用于agent构造
-        config.env,             # "retail"
+    env = get_env(              
+        config.env,             
         user_strategy=config.user_strategy,
         user_model=config.user_model,
         user_model_api=config.user_model_api,
@@ -49,7 +41,6 @@ def run(config: RunConfig) -> List[EnvRunResult]:
         thread_id=None
     )
     agent = agent_factory(
-        #tools_info=env.tools_info,
         api=config.model_api,
         wiki=env.wiki,
         config=config,
@@ -58,8 +49,7 @@ def run(config: RunConfig) -> List[EnvRunResult]:
         len(env.tasks) if config.end_index == -1 else min(config.end_index, len(env.tasks))
     )
     results: List[EnvRunResult] = []
-    #lock = multiprocessing.Lock()
-    lock = threading.Lock()  # 使用线程锁
+    lock = threading.Lock()  
     if config.task_ids and len(config.task_ids) > 0:
         print(f"Running tasks {config.task_ids} (checkpoint path: {ckpt_path})")
     else:
@@ -77,7 +67,7 @@ def run(config: RunConfig) -> List[EnvRunResult]:
         def _run(idx: int) -> EnvRunResult:
             run_start_time = time.time()
             print(f"idx:{idx}, _run start time: {run_start_time:.2f}")
-            thread_id = threading.get_ident()  # 获取当前线程的ID
+            thread_id = threading.get_ident()  
             print(f"Thread ID: {thread_id} processing index {idx}")
             isolated_env = get_env(
                 env_name=config.env,
@@ -132,7 +122,6 @@ def run(config: RunConfig) -> List[EnvRunResult]:
             return result
 
         with ThreadPoolExecutor(max_workers=config.max_concurrency) as executor:
-            #res = list(executor.map(_run, idxs))
             res = list(tqdm(executor.map(_run, idxs), total=len(idxs), desc=f"Trial {i+1}/{config.num_trials}"))
             results.extend(res)
 
@@ -148,65 +137,20 @@ def agent_factory(
     api: str, 
     wiki, config: RunConfig
 ) -> Agent:
-    if config.agent_strategy == "tool-calling":
-        # native tool calling
-        from tau_bench.agents.tool_calling_agent import ToolCallingAgent
-
-        return ToolCallingAgent(
-            #tools_info=tools_info,
-            wiki=wiki,
-            model=config.model,
-            provider=config.model_provider,
-            temperature=config.temperature,
-        )
-    elif config.agent_strategy == "act":
-        # `act` from https://arxiv.org/abs/2210.03629
-        from tau_bench.agents.chat_react_agent import ChatReActAgent
-
-        return ChatReActAgent(
-            #tools_info=tools_info,
-            wiki=wiki,
-            model=config.model,
-            provider=config.model_provider,
-            use_reasoning=False,
-            temperature=config.temperature,
-        )
-    elif config.agent_strategy == "sql":
-        # `act` from https://arxiv.org/abs/2210.03629
-        from tau_bench.agents.sql_calling_agent import SQLCallingAgent
+    if config.agent_strategy == "sql":
+        from dysql_bench.agents.sql_calling_agent import SQLCallingAgent
 
         return SQLCallingAgent(
             api=api,
             wiki=wiki,
             model=config.model,
             temperature=config.temperature,
+            max_tokens=config.max_tokens,
+            top_p=config.top_p,
+            top_k=config.top_k,
+            min_p=config.min_p,
         )
-    elif config.agent_strategy == "react":
-        # `react` from https://arxiv.org/abs/2210.03629
-        from tau_bench.agents.chat_react_agent import ChatReActAgent
 
-        return ChatReActAgent(
-            #tools_info=tools_info,
-            wiki=wiki,
-            model=config.model,
-            provider=config.model_provider,
-            use_reasoning=True,
-            temperature=config.temperature,
-        )
-    elif config.agent_strategy == "few-shot":
-        from tau_bench.agents.few_shot_agent import FewShotToolCallingAgent
-        assert config.few_shot_displays_path is not None, "Few shot displays path is required for few-shot agent strategy"
-        with open(config.few_shot_displays_path, "r") as f:
-            few_shot_displays = [json.loads(line)["messages_display"] for line in f]
-
-        return FewShotToolCallingAgent(
-            #tools_info=tools_info,
-            wiki=wiki,
-            model=config.model,
-            provider=config.model_provider,
-            few_shot_displays=few_shot_displays,
-            temperature=config.temperature,
-        )
     else:
         raise ValueError(f"Unknown agent strategy: {config.agent_strategy}")
 

@@ -1,3 +1,3 @@
 # Copyright Sierra
 
-from tau_bench.envs.chinook.env import MockChinookEnv
+from dysql_bench.envs.chinook.env import MockChinookEnv

@@ -1,10 +1,10 @@
 # Copyright Sierra
 
-from tau_bench.envs.base import Env
-from tau_bench.envs.entertainment.data import load_sql_data
-from tau_bench.envs.entertainment.wiki import WIKI
+from dysql_bench.envs.base import Env
+from dysql_bench.envs.entertainment.data import load_sql_data
+from dysql_bench.envs.entertainment.wiki import WIKI
 from typing import Optional, Union, List
-from tau_bench.envs.user import UserStrategy
+from dysql_bench.envs.user import UserStrategy
 
 class MockEntertainmentEnv(Env):
     def __init__(
@@ -16,13 +16,9 @@ class MockEntertainmentEnv(Env):
         task_index: Optional[int] = None,
         thread_id: int = None
     ):
-        match task_split:               # TODO: 修改成自己的数据
+        match task_split:               # TODO: Modify to your own data
             case "test":
-                from tau_bench.envs.entertainment.tasks_split_verify_refine_split_verify_ddl_gpt41_multiTurn_141_entertainment import TASKS_TEST as tasks
-            case "train":
-                from tau_bench.envs.entertainment.tasks_train import TASKS_TRAIN as tasks
-            case "dev":
-                from tau_bench.envs.entertainment.tasks_dev import TASKS_DEV as tasks
+                from dysql_bench.envs.entertainment.tasks_test import TASKS_TEST as tasks
             case _:
                 raise ValueError(f"Unknown task split: {task_split}")
         TABLE_NAMES: List[str] = [
@@ -33,7 +29,7 @@ class MockEntertainmentEnv(Env):
         super().__init__(
             data_load_func=load_sql_data,
             table_names=TABLE_NAMES,
-            tasks=tasks,                    # 用户发起指令(请求)的数据
+            tasks=tasks,
             wiki=WIKI,
             user_strategy=user_strategy,
             user_model=user_model,

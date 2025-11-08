@@ -1,10 +1,10 @@
 # Copyright Sierra
 
-from tau_bench.envs.base import Env
-from tau_bench.envs.chinook.data import load_sql_data
-from tau_bench.envs.chinook.wiki import WIKI
+from dysql_bench.envs.base import Env
+from dysql_bench.envs.chinook.data import load_sql_data
+from dysql_bench.envs.chinook.wiki import WIKI
 from typing import Optional, Union, List
-from tau_bench.envs.user import UserStrategy
+from dysql_bench.envs.user import UserStrategy
 
 class MockChinookEnv(Env):
     def __init__(
@@ -18,11 +18,7 @@ class MockChinookEnv(Env):
     ):
         match task_split:               # TODO: 修改成自己的数据
             case "test":
-                from tau_bench.envs.chinook.tasks_split_verify_refine_split_verify_ddl_gpt41_multiTurn_46_chinook import TASKS_TEST as tasks
-            case "train":
-                from tau_bench.envs.chinook.tasks_train import TASKS_TRAIN as tasks
-            case "dev":
-                from tau_bench.envs.chinook.tasks_dev import TASKS_DEV as tasks
+                from dysql_bench.envs.chinook.tasks_test import TASKS_TEST as tasks
             case _:
                 raise ValueError(f"Unknown task split: {task_split}")
         TABLE_NAMES: List[str] = [

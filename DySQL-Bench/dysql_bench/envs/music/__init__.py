@@ -1,3 +1,3 @@
 # Copyright Sierra
 
-from tau_bench.envs.music.env import MockMusicEnv
+from dysql_bench.envs.music.env import MockMusicEnv

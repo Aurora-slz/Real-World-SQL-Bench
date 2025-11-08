@@ -1,34 +1,19 @@
 # Copyright Sierra
 
-import json
 import os
 import shutil
 import sqlite3
-from typing import Any
 
 FOLDER_PATH = os.path.dirname(__file__)
 FILE_NAME = "complex_oracle.sqlite"
-TIMEOUT = 10   # 等待数据库操作时间
-
-def load_data() -> dict[str, Any]:
-    with open(os.path.join(FOLDER_PATH, "orders.json")) as f:
-        order_data = json.load(f)
-    with open(os.path.join(FOLDER_PATH, "products.json")) as f:
-        product_data = json.load(f)
-    with open(os.path.join(FOLDER_PATH, "users.json")) as f:
-        user_data = json.load(f)
-    return {
-        "orders": order_data,
-        "products": product_data,
-        "users": user_data,
-    }
+TIMEOUT = 10
 
 def load_sql_data(thread_id: int):
     tmp_folder_path = os.path.join(FOLDER_PATH, "tmp")
-    if not os.path.exists(tmp_folder_path):             # Mock环境的路径
+    if not os.path.exists(tmp_folder_path):
         os.mkdir(tmp_folder_path)
 
-    # 当前线程的数据存储在文件夹tmp/thread_i中
+    # The data storage for the current thread is in the folder tmp/thread_i
     sql_folder_path = os.path.join(tmp_folder_path, f"thread_{thread_id}")
     if not os.path.exists(sql_folder_path):
         os.mkdir(sql_folder_path)
@@ -39,7 +24,7 @@ def load_sql_data(thread_id: int):
 
     conn = sqlite3.connect(sql_tar_path, timeout=TIMEOUT)
     cursor = conn.cursor()
-    # profits表格太大, 读不进来. 如果模型误读这个表格, 会造成长时间卡顿
-    #cursor.execute(f"DROP VIEW IF EXISTS profits;")                
+    # The profits table is too large to read in. If the model reads this table incorrectly, it will cause a long time to stall
+    cursor.execute(f"DROP VIEW IF EXISTS profits;")                
     return conn, cursor, sql_folder_path
     

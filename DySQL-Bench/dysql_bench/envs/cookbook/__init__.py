@@ -1,3 +1,3 @@
 # Copyright Sierra
 
-from tau_bench.envs.cookbook.env import MockCookbookEnv
+from dysql_bench.envs.cookbook.env import MockCookbookEnv

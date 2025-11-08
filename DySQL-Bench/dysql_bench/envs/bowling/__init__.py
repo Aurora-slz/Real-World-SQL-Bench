@@ -1,3 +1,3 @@
 # Copyright Sierra
 
-from tau_bench.envs.bowling.env import MockBowlingEnv
+from dysql_bench.envs.bowling.env import MockBowlingEnv

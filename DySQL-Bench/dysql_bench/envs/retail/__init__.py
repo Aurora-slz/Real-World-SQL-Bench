@@ -1,3 +1,3 @@
 # Copyright Sierra
 
-from tau_bench.envs.retail.env import MockRetailDomainSQLEnv
+from dysql_bench.envs.retail.env import MockRetailDomainSQLEnv
