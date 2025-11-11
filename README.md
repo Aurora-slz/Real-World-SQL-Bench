@@ -53,28 +53,33 @@ Finally, only tasks that meet all quality criteria are included in the benchmark
 
 1. Vanilla QA Task Generation
 
+Sample from the tree-structured data pool and use an LLM to generate initial tasks.
 ```bash
 python generate_sqlbench_qa_multiTurn_qa-openai.py
-
-python generate_sqlbench_qa_team_mutltiTurn.py 
-
-> Generation format: python extract_qa.py
 ```
+> Converts the LLM-generated tasks into JSON format: python extract_qa.py
 
 2. Task Verification Process
 
+Use the LLM as a verifier to determine whether the initial task's golden label successfully addresses the instruction.
+
 ```bash
 python verify_qa_voting_openai.py
-
-> split quality tasks: python verify_qa_voting_then_split.py
 ```
+> split quality tasks: python verify_qa_voting_then_split.py
+
 
 3. Task Refinement Process
+
+Use the LLM as a refiner to improve the task's instruction description based on the task's golden action.
+
 ```bash
 python generate_refine_sqlbench_qa.py
 ```
 
 4. Save Tasks for Database Update
+
+Retain tasks that involve update operations on the database.
 
 ```bash
 python format_bench_wo_output.py
