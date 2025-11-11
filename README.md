@@ -18,7 +18,7 @@ This repository contains the official implementation of our paper, **"Rethinking
   <table style="width:100%;">
     <tr>
       <td align="center" style="width:20%;"><br>
-        <img src="./assets/demo.pdf" style="width:72%;"/><br>
+        <img src="./assets/demo.png" style="width:72%;"/><br>
         <b>Overview of interaction types between user, LLM agent, and database.
 From left to right: (a) direct Text-to-SQL execution, (b) iterative reasoning within a single query (ReAct), and (c) our approach enabling multi-step, multi-turn contextual execution.</b>
       </td>     
@@ -33,7 +33,7 @@ We introduce **DySQL-Bench**, a benchmark designed to evaluate Text-to-SQL model
   <table style="width:100%;">
     <tr>
       <td align="center" style="width:20%;"><br>
-        <img src="./assets/method2.pdf" style="width:72%;"/><br>
+        <img src="./assets/method2.png" style="width:72%;"/><br>
         <b>Our task generation pipeline.</b>
       </td>     
     </tr>
@@ -98,7 +98,7 @@ pip install -e .
 
 This will download all the 13 databases.
 ```bash
-python ./scripts/fetch_dbs.py
+python ./scripts/fetch_dbs.py --all
 ```
 
 Run the tasks. We offer two scipts to run the task.
