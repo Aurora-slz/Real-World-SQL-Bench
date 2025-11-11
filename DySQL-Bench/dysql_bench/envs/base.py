@@ -78,6 +78,7 @@ class Env(object):
         else:
             self.task_index = random.randint(0, len(tasks) - 1)
         self.task = tasks[self.task_index]
+        # self.tasks = self.tasks[:5]         # DEBUG: 只跑前5个任务
         self.table_names = table_names
 
         self.wiki = wiki

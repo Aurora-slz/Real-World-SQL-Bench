@@ -18,6 +18,9 @@ tmp/
 
 results/
 
-.sqlite
+# DB files
+**/*.sqlite
+**/*.sqlite3
+**/*.db
 
 .cache

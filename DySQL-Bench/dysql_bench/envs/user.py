@@ -32,20 +32,12 @@ class BaseUserSimulationEnv(abc.ABC):
     def step(self, content: str) -> str:
         raise NotImplementedError
 
-    @abc.abstractmethod
-    def get_total_cost(self) -> float:
-        raise NotImplementedError
-
-
 class HumanUserSimulationEnv(BaseUserSimulationEnv):
     def reset(self, instruction: str) -> str:
         return input(f"{instruction}\n")
 
     def step(self, content: str) -> str:
         return input(f"{content}\n")
-
-    def get_total_cost(self) -> float:
-        return 0
 
 
 class LLMUserSimulationEnv(BaseUserSimulationEnv):
@@ -116,11 +108,13 @@ def load_user(
     user_strategy: Union[str, UserStrategy],
     model: Optional[str] = "gpt-4o",
 ) -> BaseUserSimulationEnv:
-    if user_strategy == UserStrategy.HUMAN:
+
+    if isinstance(user_strategy, str):
+        user_strategy = UserStrategy(user_strategy.strip().lower())
+
+    if user_strategy is UserStrategy.HUMAN:
         return HumanUserSimulationEnv()
-    elif user_strategy == UserStrategy.LLM:
+    elif user_strategy is UserStrategy.LLM:
         if model is None:
             raise ValueError("LLM user strategy requires a model")
         return LLMUserSimulationEnv(model=model, api=api)
-    else:
-        raise ValueError(f"Unknown user strategy {user_strategy}")

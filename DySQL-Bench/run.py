@@ -1,9 +1,9 @@
 # Copyright Sierra
 
 import argparse
-from tau_bench.types import RunConfig
-from tau_bench.run import run
-from tau_bench.envs.user import UserStrategy
+from dysql_bench.types import RunConfig
+from dysql_bench.run import run
+from dysql_bench.envs.user import UserStrategy
 
 
 def parse_args() -> RunConfig:
@@ -20,7 +20,7 @@ def parse_args() -> RunConfig:
     parser.add_argument(
         "--model-api",
         type=str,
-        default="http://127.0.0.1:30000",
+        default="http://127.0.0.1:80",
         help="The model to use for the agent",
     )    
     parser.add_argument(
@@ -32,27 +32,53 @@ def parse_args() -> RunConfig:
     parser.add_argument(
         "--user-model-api",
         type=str,
-        default="http://127.0.0.1:30000",
+        default="http://127.0.0.1:80",
         help="The model's api to use for the user simulator",
     )
     parser.add_argument(
         "--agent-strategy",
         type=str,
         default="sql",
-        choices=["tool-calling", "act", "react", "few-shot", "sql"],
+        choices=["sql"],
     )
     parser.add_argument(
         "--temperature",
         type=float,
-        default=0.0,
+        default=0.6,
         help="The sampling temperature for the action model",
+    )
+    parser.add_argument(
+    "--max_tokens",
+    type=int,
+    default=8192,
+    help="The maximum number of tokens to generate for each model output",
+    )
+    parser.add_argument(
+        "--top_k",
+        type=int,
+        default=20,
+        help="The top_k hyperparameter for the action model (number of tokens to sample from)",
+    )
+
+    parser.add_argument(
+        "--top_p",
+        type=float,
+        default=0.95,
+        help="The top_p (nucleus sampling) parameter for the action model; lower = more focused sampling",
+    )
+
+    parser.add_argument(
+        "--min_p",
+        type=float,
+        default=0.0,
+        help="The minimum probability threshold for token sampling (used in min_p sampling)",
     )
     parser.add_argument(
         "--task-split",
         type=str,
         default="test",
-        choices=["train", "test", "dev"],
-        help="The split of tasks to run (only applies to the retail domain for now",
+        choices=["test"],
+        help="The split of tasks to run",
     )
     parser.add_argument("--start-index", type=int, default=0)
     parser.add_argument("--end-index", type=int, default=-1, help="Run all tasks if -1")
@@ -67,7 +93,7 @@ def parse_args() -> RunConfig:
     parser.add_argument("--seed", type=int, default=10)
     parser.add_argument("--shuffle", type=int, default=0)
     parser.add_argument("--user-strategy", type=str, default="llm", choices=[item.value for item in UserStrategy])
-    parser.add_argument("--few-shot-displays-path", type=str, help="Path to a jsonlines file containing few shot displays")
+
     args = parser.parse_args()
     print(args)
     return RunConfig(
@@ -79,6 +105,10 @@ def parse_args() -> RunConfig:
         env=args.env,
         agent_strategy=args.agent_strategy,
         temperature=args.temperature,
+        max_tokens=args.max_tokens,
+        top_k=args.top_k,
+        top_p=args.top_p,
+        min_p=args.min_p,
         task_split=args.task_split,
         start_index=args.start_index,
         end_index=args.end_index,
@@ -88,7 +118,6 @@ def parse_args() -> RunConfig:
         seed=args.seed,
         shuffle=args.shuffle,
         user_strategy=args.user_strategy,
-        few_shot_displays_path=args.few_shot_displays_path,
     )
 
 
@@ -99,4 +128,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-#python run.py --agent-strategy tool-calling --env retail --model /mnt/public/gpfs-jd/data/lh/models/Qwen2.5-3B-Instruct --model-provider openai --user-model /mnt/public/gpfs-jd/data/lh/models/Qwen2.5-3B-Instruct --user-model-provider openai --user-strategy llm --max-concurrency 10

@@ -27,7 +27,7 @@ def run(config: RunConfig) -> List[EnvRunResult]:
 
     random.seed(config.seed)
     time_str = datetime.now().strftime("%m%d%H%M%S")
-    ckpt_path = f"{config.log_dir}/results/{config.env}-{config.agent_strategy}-agent-{config.model.split('/')[-1]}-{config.temperature}_range_{config.start_index}-{config.end_index}_user-{config.user_model.split('/')[-1]}-{config.user_strategy}_{time_str}.json"
+    ckpt_path = f"{config.log_dir}/{config.env}-{config.agent_strategy}-agent-{config.model.split('/')[-1]}-{config.temperature}_range_{config.start_index}-{config.end_index}_user-{config.user_model.split('/')[-1]}-{config.user_strategy}_{time_str}.json"
     if not os.path.exists(config.log_dir):
         os.makedirs(config.log_dir)
 
@@ -135,20 +135,27 @@ def run(config: RunConfig) -> List[EnvRunResult]:
 
 def agent_factory(
     api: str, 
-    wiki, config: RunConfig
+    wiki, 
+    config: RunConfig
 ) -> Agent:
     if config.agent_strategy == "sql":
         from dysql_bench.agents.sql_calling_agent import SQLCallingAgent
+
+        temperature = getattr(config, "temperature", 0.6) 
+        max_tokens = getattr(config, "max_tokens", 8192)
+        top_p = getattr(config, "top_p", 0.95)
+        top_k = getattr(config, "top_k", 20)
+        min_p = getattr(config, "min_p", 0.0)
 
         return SQLCallingAgent(
             api=api,
             wiki=wiki,
             model=config.model,
-            temperature=config.temperature,
-            max_tokens=config.max_tokens,
-            top_p=config.top_p,
-            top_k=config.top_k,
-            min_p=config.min_p,
+            temperature=temperature,
+            max_tokens=max_tokens,
+            top_p=top_p,
+            top_k=top_k,
+            min_p=min_p,
         )
 
     else:

@@ -103,8 +103,7 @@ class SQLCallingAgent(Agent):
         content = clean_text.strip()
     
         return {
-            'role': 'agent',
-            'raw_response': text,
+            'role': 'assistant',
             'reasoning_content': reasoning_content,
             'content': content
         }
@@ -116,6 +115,10 @@ def message_to_action(
     if "```sql" in message["content"]:
         sql_pattern = r"```sql(.*?)```"
         matches = re.findall(sql_pattern, message["content"], re.DOTALL)[0]
+        return Action(name=SQL_ACTION_NAME, kwargs={"content": message["content"], "sql": matches})
+    elif "<sql>" in message["content"]:
+        sql_pattern = r"<sql>(.*?)</sql>"
+        matches = re.findall(sql_pattern, message["content"], re.DOTALL)[0]     # 如果有多个sql调用, 只保留第一个
         return Action(name=SQL_ACTION_NAME, kwargs={"content": message["content"], "sql": matches})
     else:
         return Action(name=RESPOND_ACTION_NAME, kwargs={"content": message["content"]})

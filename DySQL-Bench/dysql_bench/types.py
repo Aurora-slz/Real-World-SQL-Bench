@@ -77,6 +77,10 @@ class RunConfig(BaseModel):
     env: str = "retail"
     agent_strategy: str = "sql"
     temperature: float = 0.6
+    max_tokens: int = 8192
+    top_k: int = 20
+    top_p: float = 0.95
+    min_p: float = 0.0
     task_split: str = "test"
     start_index: int = 0
     end_index: int = -1
@@ -86,4 +90,3 @@ class RunConfig(BaseModel):
     seed: int = 10
     shuffle: int = 0
     user_strategy: str = "llm"
-    few_shot_displays_path: Optional[str] = None
