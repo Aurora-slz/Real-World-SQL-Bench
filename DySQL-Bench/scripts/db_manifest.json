@@ -1,0 +1,55 @@
+{
+    "pagila": {
+      "hf_path": "hf://datasets/gtysssp/Real-World-SQL-Bench-Databases/Pagila.sqlite",
+      "local_path": "dysql_bench/envs/pagila/data/Pagila.sqlite"
+    },
+    "retail": {
+      "hf_path": "hf://datasets/gtysssp/Real-World-SQL-Bench-Databases/complex_oracle.sqlite",
+      "local_path": "dysql_bench/envs/retail/data/complex_oracle.sqlite"
+    },
+    "bowling": {
+      "hf_path": "hf://datasets/gtysssp/Real-World-SQL-Bench-Databases/BowlingLeague.sqlite",
+      "local_path": "dysql_bench/envs/bowling/data/BowlingLeague.sqlite"
+    },
+    "chinook": {
+      "hf_path": "hf://datasets/gtysssp/Real-World-SQL-Bench-Databases/chinook.sqlite",
+      "local_path": "dysql_bench/envs/chinook/data/chinook.sqlite"
+    },
+    "entertainment": {
+      "hf_path": "hf://datasets/gtysssp/Real-World-SQL-Bench-Databases/EntertainmentAgency.sqlite",
+      "local_path": "dysql_bench/envs/entertainment/data/EntertainmentAgency.sqlite"
+    },
+    "eu_soccer": {
+      "hf_path": "hf://datasets/gtysssp/Real-World-SQL-Bench-Databases/EU_soccer.sqlite",
+      "local_path": "dysql_bench/envs/eu_soccer/data/EU_soccer.sqlite"
+    },
+    "music": {
+      "hf_path": "hf://datasets/gtysssp/Real-World-SQL-Bench-Database/music.sqlite",
+      "local_path": "dysql_bench/envs/music/data/music.sqlite"
+    },
+    "car": {
+      "hf_path": "hf://datasets/gtysssp/Real-World-SQL-Bench-Databases/cars.sqlite",
+      "local_path": "dysql_bench/envs/car/data/cars.sqlite"
+    },
+    "cookbook": {
+      "hf_path": "hf://datasets/gtysssp/Real-World-SQL-Bench-Databases/cookbook.sqlite",
+      "local_path": "dysql_bench/envs/cookbook/data/cookbook.sqlite"
+    },
+    "human_resources": {
+      "hf_path": "hf://datasets/gtysssp/Real-World-SQL-Bench-Databases/human_resources.sqlite",
+      "local_path": "dysql_bench/envs/human_resources/data/human_resources.sqlite"
+    },
+    "ice_hockey": {
+      "hf_path": "hf://datasets/gtysssp/Real-World-SQL-Bench-Databases/ice_hockey_draft.sqlite",
+      "local_path": "dysql_bench/envs/ice_hockey/data/ice_hockey_draft.sqlite"
+    },
+    "law_episode": {
+      "hf_path": "hf://datasets/gtysssp/Real-World-SQL-Bench-Databases/law_episode.sqlite",
+      "local_path": "dysql_bench/envs/law_episode/data/law_episode.sqlite"
+    },
+    "retail_world": {
+      "hf_path": "hf://datasets/gtysssp/Real-World-SQL-Bench-Databases/retail_world.sqlite",
+      "local_path": "dysql_bench/envs/retail_world/data/retail_world.sqlite"
+    }
+  }
+  
