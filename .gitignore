@@ -24,3 +24,5 @@ results/
 **/*.db
 
 .cache
+
+.egg-info/
