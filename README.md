@@ -1,7 +1,7 @@
 <h1 align="center">Rethinking Text-to-SQL: Dynamic Multi-turn SQL Interaction for Real-world Database Exploration</h1>
 
 <p align="center" style="font-size: 16px;">
-    Linzhuang Sun1†, Tianyu Guo2†, Hao Liang2†, Yuying Li3, Qifeng Cai2, Jingxuan Wei1, Bihui Yu1,
+    Linzhuang Sun†, Tianyu Guo†, Hao Liang†, Yuying Li, Qifeng Cai, Jingxuan Wei, Bihui Yu,
     Wentao Zhang*, Bin Cui*
 </p>
 <p align="center" style="font-size: 12px;"><i>(* corresponding author, † equal contribution)</i></p>
