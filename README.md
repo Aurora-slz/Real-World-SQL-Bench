@@ -123,3 +123,13 @@ python run.py \
 python run_multi_task.py --agent-model agent_model_name --user-model user_model_name --num-trials 1 --all 
 
 ```
+## Citation
+If you find our work helpful, feel free to give us a cite.
+```markdown
+@article{sun2025rethinking,
+  title={Rethinking Text-to-SQL: Dynamic Multi-turn SQL Interaction for Real-world Database Exploration},
+  author={Sun, Linzhuang and Guo, Tianyu and Liang, Hao and Li, Yuying and Cai, Qifeng and Wei, Jingxuan and Yu, Bihui and Zhang, Wentao and Cui, Bin},
+  journal={arXiv preprint arXiv:2510.26495},
+  year={2025}
+}
+```
